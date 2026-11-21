@@ -1,0 +1,85 @@
+/* =========================================================
+   Base
+   Reset, tipografia, cores de sintaxe e barra de progresso.
+   ========================================================= */
+
+/* ---------- base ---------- */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 1rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  transition: background-color .35s ease, color .35s ease;
+}
+
+a { color: inherit; }
+p { margin: 0; }
+h1, h2, h3, h4 { margin: 0; font-weight: 700; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+button { font: inherit; color: inherit; cursor: pointer; }
+img { display: block; }
+
+::selection { background: var(--accent); color: var(--accent-ink); }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+
+.nav, .term, .section__head, .chip, .stack dt, .project__meta, .project__stack, .code,
+.pipeline, .led, .timeline__when, .more__name, .buddy__head, .pill-btn, .btn, .link-arrow,
+.legend, .scroll-cue, .footer, .contact__email, .id-card__role, .pillar__proof, .pillars__title,
+.more__title, .buddy__btn, .toast {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.serif, .hero__title em, .about__big em, .contact__big em {
+  font-family: "Instrument Serif", Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--accent);
+  letter-spacing: -.01em;
+}
+
+.skip-link {
+  position: absolute; left: 1rem; top: -3rem; z-index: 100;
+  background: var(--accent); color: var(--accent-ink);
+  padding: .5rem .9rem; border-radius: 8px; text-decoration: none;
+}
+.skip-link:focus { top: 1rem; }
+
+#topology { position: fixed; inset: 0; z-index: -1; width: 100%; height: 100%; pointer-events: none; }
+
+/* barra de progresso da leitura */
+.progress { position: fixed; inset: 0 0 auto; height: 2px; z-index: 70; pointer-events: none; }
+.progress span {
+  display: block; height: 100%; width: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--teal));
+  transform-origin: left; transform: scaleX(0);
+}
+
+/* ---------- sintaxe ---------- */
+.c-text { color: var(--text); }
+.c-muted { color: var(--muted); }
+.c-dim { color: var(--dim); }
+.c-teal { color: var(--teal); }
+.c-green { color: var(--green); }
+.c-blue { color: var(--blue); }
+.c-pink { color: var(--pink); }
+.c-yellow { color: var(--yellow); }
+.c-orange { color: var(--orange); }
+
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--teal); vertical-align: middle; }
+.dot--live { animation: pulse 1.8s ease-out infinite; }
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--teal) 60%, transparent); }
+  100% { box-shadow: 0 0 0 8px transparent; }
+}
+@keyframes blink { 50% { opacity: 0; } }

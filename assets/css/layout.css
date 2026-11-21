@@ -1,0 +1,133 @@
+/* =========================================================
+   Layout
+   Navegação, seções, animações de entrada e rodapé.
+   ========================================================= */
+
+/* ---------- layout ---------- */
+main, .nav, .footer { width: min(1120px, 100% - 2.5rem); margin-inline: auto; }
+
+/* ---------- nav ---------- */
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: .75rem; z-index: 49;
+  background: var(--bg); transition: background-color .35s ease;
+}
+.nav {
+  position: sticky; top: .75rem; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  margin-top: .75rem;
+  padding: .55rem .6rem .55rem 1rem;
+  background: color-mix(in srgb, var(--surface) 78%, transparent);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  font-size: .85rem;
+  animation: drop .8s var(--ease) both;
+}
+@keyframes drop { from { opacity: 0; transform: translateY(-14px); } }
+.nav__brand { text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: .4rem; }
+.nav__prompt { color: var(--teal); }
+
+.nav__links { display: flex; gap: .25rem; position: relative; }
+.nav__links a {
+  position: relative; text-decoration: none; color: var(--muted);
+  padding: .35rem .7rem; border-radius: 8px; transition: color .25s;
+}
+.nav__links a::after {
+  content: ""; position: absolute; left: .7rem; right: .7rem; bottom: .2rem; height: 1px;
+  background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform .35s var(--ease);
+}
+.nav__links a:hover, .nav__links a.is-active { color: var(--text); }
+.nav__links a:hover::after, .nav__links a.is-active::after { transform: scaleX(1); }
+
+.nav__actions { display: flex; align-items: center; gap: .4rem; }
+
+.pill-btn {
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 999px; padding: .35rem .75rem; font-size: .78rem;
+  color: var(--muted); transition: border-color .2s, color .2s;
+}
+.pill-btn:hover { border-color: var(--accent); color: var(--text); }
+.pill-btn .sep { margin: 0 .3rem; color: var(--dim); }
+html[lang="pt-BR"] [data-lang="pt"],
+html[lang="en"] [data-lang="en"] { color: var(--accent); font-weight: 700; }
+
+.icon-btn {
+  width: 36px; height: 36px; display: grid; place-items: center;
+  background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px;
+  transition: border-color .2s, transform .4s var(--spring);
+}
+.icon-btn:hover { border-color: var(--accent); }
+#theme-toggle:active { transform: rotate(40deg) scale(.92); }
+.icon-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+.icon-moon { fill: currentColor !important; stroke: none !important; }
+[data-theme="dark"] .icon-moon,
+[data-theme="light"] .icon-sun { display: none; }
+
+.nav__num { display: none; }
+.nav__menu { display: none; flex-direction: column; justify-content: center; align-items: center; gap: 5px; padding: 0; }
+.nav__menu span { display: block; width: 16px; height: 2px; background: currentColor; border-radius: 2px; transition: transform .3s var(--ease); }
+.nav__menu[aria-expanded="true"] span:first-child { transform: translateY(3.5px) rotate(45deg); }
+.nav__menu[aria-expanded="true"] span:last-child { transform: translateY(-3.5px) rotate(-45deg); }
+
+/* ---------- animação de entrada (só com JS) ---------- */
+.js .intro { opacity: 0; transform: translateY(18px); }
+.is-loaded .intro {
+  opacity: 1; transform: none;
+  transition: opacity .9s var(--ease), transform .9s var(--ease);
+  transition-delay: calc(var(--d, 0) * 90ms + 150ms);
+}
+
+/* palavras que sobem por trás de uma máscara */
+.w { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: .08em; margin-bottom: -.08em; }
+.w > span { display: inline-block; }
+.js [data-split] .w > span { transform: translateY(110%); }
+[data-split].is-split-in .w > span {
+  transform: none;
+  transition: transform .9s var(--ease);
+  transition-delay: calc(var(--i) * 55ms + var(--base, 0ms));
+}
+
+/* ---------- seções ---------- */
+.section { padding: clamp(5rem, 11vw, 9rem) 0 0; }
+
+.section__head {
+  position: relative;
+  display: flex; align-items: baseline; gap: 1rem;
+  margin-bottom: clamp(2rem, 5vw, 3.5rem);
+  padding-bottom: 1rem;
+}
+.section__head::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+  background: linear-gradient(90deg, var(--accent), var(--border) 30%);
+  transform-origin: left; transform: scaleX(1);
+}
+.js .section__head::after { transform: scaleX(0); transition: transform 1.2s var(--ease) .15s; }
+.js .section__head.is-in::after { transform: scaleX(1); }
+.section__index { color: var(--accent); font-size: .85rem; }
+.section__head h2 { font-size: clamp(1.7rem, 4vw, 2.5rem); font-weight: 700; letter-spacing: -.035em; overflow: hidden; }
+.section__head h2::before { content: "./"; color: var(--dim); font-weight: 500; }
+.js .section__head h2 > .h2-in { display: inline-block; transform: translateY(105%); transition: transform .9s var(--ease); }
+.js .section__head.is-in h2 > .h2-in { transform: none; }
+.js .section__index { opacity: 0; transition: opacity .6s ease .3s; }
+.js .section__head.is-in .section__index { opacity: 1; }
+
+/* destaque da seção durante o tour */
+.tour-focus .section__head h2 { color: var(--accent); transition: color .5s; }
+
+/* revelar ao rolar */
+.js .reveal { opacity: 0; transform: translateY(26px); }
+.js .reveal.is-in {
+  opacity: 1; transform: none;
+  transition: opacity .9s var(--ease), transform .9s var(--ease);
+  transition-delay: calc(var(--i, 0) * 110ms);
+}
+
+.footer {
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: .5rem;
+  margin-top: 5rem; padding: 1.5rem 0 7rem; border-top: 1px solid var(--border);
+  font-size: .74rem; color: var(--dim);
+}
+.footer__top { text-decoration: none; color: var(--muted); display: inline-flex; gap: .4rem; transition: color .2s; }
+.footer__top span:last-child { transition: transform .3s var(--ease); }
+.footer__top:hover { color: var(--accent); }
+.footer__top:hover span:last-child { transform: translateY(-3px); }
