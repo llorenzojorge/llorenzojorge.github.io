@@ -5,6 +5,7 @@
 export default {
   "meta.title": "Lorenzo Jorge · Full-Stack Developer",
   skip: "Skip to content",
+  "nav.home": "start",
   "nav.about": "about",
   "nav.stack": "stack",
   "nav.projects": "projects",
@@ -14,7 +15,7 @@ export default {
   "hero.lead": "Full-stack developer focused on back-end. I think through the architecture before the code: well-defined layers, protected business rules, tests and CI. <strong>Node.js, NestJS and .NET</strong>, in TypeScript or C#.",
   "hero.cta1": "See projects",
   "hero.cta2": "Get in touch",
-  "hero.hint": "scroll to explore",
+  "hero.hint": "scroll or follow the road",
   "term.status": "open to opportunities",
   "about.title": "about",
   "about.big": "A full-stack dev who thinks <em>architecture</em> first: code that works today and stays easy to change tomorrow.",
@@ -78,8 +79,10 @@ export default {
   "contact.copy": "copy",
   "contact.copied": "email copied ✓",
   "footer.top": "back to top",
-  "aria.theme": "Toggle light/dark theme",
-  "aria.menu": "Open menu",
+  "aria.car": "Chevettinho, the site guide. Click to chat",
+  "aria.close": "Close",
+  "map.next": "next stop",
+  "map.odo": "odometer",
 
   "buddy.tour": "tour",
   "buddy.skip": "Not now",
@@ -91,7 +94,7 @@ export default {
     "First stop: who Lorenzo is. A back-end focused full-stack dev who prioritizes solid architecture and code that's ready to grow.",
     "Here's the engine: TypeScript and C# every day, with PostgreSQL and SQL Server in the trunk. The highlighted ones are daily drivers.",
     "Now the projects. Each one shows a real request and what the API answers. Hit replay to run it again.",
-    "End of the ride! If this fits your team, the contact is right here. I'll stay parked in the corner if you need me.",
+    "End of the ride! If this fits your team, the contact is right here. I'll stay right here on the road if you need me.",
   ],
   "buddy.hello": "Beep beep! Where to?",
   "buddy.q": [

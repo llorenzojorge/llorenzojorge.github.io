@@ -1,4 +1,4 @@
-/** Cards de projeto: simulação de requisição → resposta, brilho no cursor e o feed do TaskbarLed. */
+/** Cards de projeto: simulação de requisição → resposta e o feed do TaskbarLed. */
 import { sleep } from "../core/utils.js";
 import { t } from "../i18n/index.js";
 import { observe } from "./reveal.js";
@@ -47,16 +47,6 @@ function initSequences() {
   });
 }
 
-function initSpotlight() {
-  document.querySelectorAll(".project").forEach((card) => {
-    card.addEventListener("pointermove", (e) => {
-      const rect = card.getBoundingClientRect();
-      card.style.setProperty("--mx", `${e.clientX - rect.left}px`);
-      card.style.setProperty("--my", `${e.clientY - rect.top}px`);
-    });
-  });
-}
-
 /** Réplica decorativa do painel do TaskbarLed: digita ações e conta o tempo. */
 async function initLedFeed() {
   const text = document.getElementById("led-text");
@@ -81,6 +71,5 @@ async function initLedFeed() {
 
 export function initProjects() {
   initSequences();
-  initSpotlight();
   initLedFeed();
 }

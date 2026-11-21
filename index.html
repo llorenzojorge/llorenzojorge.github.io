@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="dark">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Lorenzo Jorge · Desenvolvedor Full-Stack</title>
   <meta name="description" content="Lorenzo Jorge, desenvolvedor full-stack com foco em back-end. Software sólido, boa arquitetura e APIs REST com Node.js, NestJS e .NET." />
   <meta name="author" content="Lorenzo Jorge" />
-  <meta name="theme-color" content="#100e18" />
+  <meta name="theme-color" content="#e4e3df" />
   <link rel="canonical" href="https://llorenzojorge.github.io/" />
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml" />
 
@@ -18,15 +18,13 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
 
   <script>
-    // Aplica tema e idioma salvos antes da página aparecer (evita "piscar").
+    // Aplica o idioma salvo antes da página aparecer (evita "piscar").
     (function () {
       try {
-        var t = localStorage.getItem("lj-theme");
         var l = localStorage.getItem("lj-lang");
-        if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
         if (l === "en") document.documentElement.lang = "en";
       } catch (e) {}
       document.documentElement.classList.add("js");
@@ -42,6 +40,7 @@
   <link rel="stylesheet" href="assets/css/components/stack.css" />
   <link rel="stylesheet" href="assets/css/components/projects.css" />
   <link rel="stylesheet" href="assets/css/components/contact.css" />
+  <link rel="stylesheet" href="assets/css/components/minimap.css" />
   <link rel="stylesheet" href="assets/css/components/chevettinho.css" />
   <link rel="stylesheet" href="assets/css/motion.css" />
   <link rel="stylesheet" href="assets/css/responsive.css" />
@@ -51,11 +50,8 @@
 <body>
   <a class="skip-link" href="#main" data-i18n="skip">Pular para o conteúdo</a>
 
-  <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
-  <!-- fundo: aurora + grade iluminada pelo cursor + rede de nós -->
-  <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
-  <div class="grid-spot" aria-hidden="true"></div>
-  <canvas id="topology" aria-hidden="true"></canvas>
+  <!-- fundo estático: textura e curvas de nível -->
+  <div class="backdrop" aria-hidden="true"></div>
 
   <!-- abertura -->
   <div class="boot" id="boot" aria-hidden="true">
@@ -66,39 +62,89 @@
     </div>
   </div>
 
-  <!-- efeitos da viagem do Chevettinho -->
-  <div class="warp" id="warp" aria-hidden="true"></div>
-  <div class="road" id="road" aria-hidden="true">
-    <div class="road__lane"></div>
-    <div class="road__sign" id="road-sign"><span class="road__pin"></span><span id="road-sign-text">./sobre</span></div>
+  <!-- placa que cruza a tela na transição entre paradas -->
+  <div class="shift" id="shift" aria-hidden="true">
+    <div class="shift__road"></div>
+    <div class="shift__sign">
+      <span class="shift__eyebrow"><span data-i18n="map.next">próxima parada</span> · <span id="shift-num">02</span></span>
+      <span class="shift__title" id="shift-title">sobre</span>
+    </div>
   </div>
 
-  <!-- ============ NAV ============ -->
-  <header class="nav">
-    <a href="#top" class="nav__brand" aria-label="Lorenzo Jorge, início">
-      <span class="nav__prompt">❯</span> ~/lorenzo
+  <!-- ============ MINIMAPA: a navegação é uma estrada ============ -->
+  <aside class="map" aria-label="Navegação">
+    <a href="#top" class="map__brand" aria-label="Lorenzo Jorge, início">
+      <span class="map__mono" aria-hidden="true">L<span>J</span></span>
+      <span class="map__name">lorenzo jorge</span>
     </a>
 
-    <nav class="nav__links" id="nav-links" aria-label="Principal">
-      <a href="#sobre" style="--n: 0"><span class="nav__num">01</span><span data-i18n="nav.about">sobre</span></a>
-      <a href="#stack" style="--n: 1"><span class="nav__num">02</span><span data-i18n="nav.stack">stack</span></a>
-      <a href="#projetos" style="--n: 2"><span class="nav__num">03</span><span data-i18n="nav.projects">projetos</span></a>
-      <a href="#contato" style="--n: 3"><span class="nav__num">04</span><span data-i18n="nav.contact">contato</span></a>
+    <nav class="map__route" id="route" aria-label="Seções">
+      <div class="map__road" aria-hidden="true"></div>
+      <ol class="map__stops">
+        <li><a class="map__stop" href="#top"><span class="map__dot" aria-hidden="true"></span><span class="map__num">01</span><span class="map__label" data-i18n="nav.home">início</span></a></li>
+        <li><a class="map__stop" href="#sobre"><span class="map__dot" aria-hidden="true"></span><span class="map__num">02</span><span class="map__label" data-i18n="nav.about">sobre</span></a></li>
+        <li><a class="map__stop" href="#stack"><span class="map__dot" aria-hidden="true"></span><span class="map__num">03</span><span class="map__label" data-i18n="nav.stack">stack</span></a></li>
+        <li><a class="map__stop" href="#projetos"><span class="map__dot" aria-hidden="true"></span><span class="map__num">04</span><span class="map__label" data-i18n="nav.projects">projetos</span></a></li>
+        <li><a class="map__stop" href="#contato"><span class="map__dot" aria-hidden="true"></span><span class="map__num">05</span><span class="map__label" data-i18n="nav.contact">contato</span></a></li>
+      </ol>
+
+      <!-- Chevettinho: anda pela estrada conforme o visitante avança -->
+      <div class="map__car" id="map-car">
+        <span class="car__shout" id="car-shout" aria-hidden="true">vrum!</span>
+        <button class="car-btn" id="buddy-car" type="button" aria-label="Chevettinho, o guia do site. Clique para conversar" data-i18n-aria="aria.car">
+          <svg viewBox="0 0 120 112" aria-hidden="true">
+            <defs>
+              <linearGradient id="carBody" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#4f69e0" />
+                <stop offset="1" stop-color="#2a46c9" />
+              </linearGradient>
+              <linearGradient id="carRoof" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#7d92ee" />
+                <stop offset="1" stop-color="#4f69e0" />
+              </linearGradient>
+            </defs>
+            <ellipse class="car__shadow" cx="60" cy="106" rx="42" ry="5" />
+            <g class="car__body">
+              <line x1="84" y1="22" x2="94" y2="5" stroke="#14161b" stroke-width="2.6" stroke-linecap="round" />
+              <circle cx="94" cy="5" r="3.6" fill="#b8492f" />
+              <rect x="18" y="84" width="18" height="20" rx="6" fill="#14161b" />
+              <rect x="84" y="84" width="18" height="20" rx="6" fill="#14161b" />
+              <path d="M30 52 L40 24 Q42 19 48 19 L72 19 Q78 19 80 24 L90 52 Z" fill="url(#carRoof)" />
+              <path d="M37 49 L45 27 Q46 25 49 25 L71 25 Q74 25 75 27 L83 49 Z" fill="#14161b" />
+              <path d="M50 28 L44 45" stroke="#e9eaee" stroke-opacity=".35" stroke-width="3" stroke-linecap="round" />
+              <rect x="8" y="48" width="104" height="44" rx="16" fill="url(#carBody)" />
+              <rect x="8" y="48" width="104" height="10" rx="5" fill="#fff" fill-opacity=".14" />
+              <g class="car__eye">
+                <circle cx="32" cy="68" r="12" fill="#f3f3f0" stroke="#14161b" stroke-width="2" />
+                <circle class="car__pupil" cx="32" cy="68" r="5.2" fill="#14161b" />
+                <circle class="car__pupil-shine" cx="34" cy="65.5" r="1.6" fill="#fff" />
+                <rect class="car__lid" x="19" y="55" width="26" height="26" fill="url(#carBody)" />
+              </g>
+              <g class="car__eye">
+                <circle cx="88" cy="68" r="12" fill="#f3f3f0" stroke="#14161b" stroke-width="2" />
+                <circle class="car__pupil" cx="88" cy="68" r="5.2" fill="#14161b" />
+                <circle class="car__pupil-shine" cx="90" cy="65.5" r="1.6" fill="#fff" />
+                <rect class="car__lid" x="75" y="55" width="26" height="26" fill="url(#carBody)" />
+              </g>
+              <path d="M50 74 Q60 83 70 74" fill="none" stroke="#14161b" stroke-width="3" stroke-linecap="round" />
+              <rect x="12" y="88" width="96" height="7" rx="3.5" fill="#14161b" />
+              <rect x="54" y="89.5" width="12" height="4" rx="1" fill="#e9eaee" fill-opacity=".7" />
+            </g>
+          </svg>
+        </button>
+      </div>
     </nav>
 
-    <div class="nav__actions">
-      <button class="pill-btn" id="lang-toggle" type="button" aria-label="Mudar idioma / Change language">
-        <span data-lang="pt">PT</span><span class="sep">/</span><span data-lang="en">EN</span>
-      </button>
-      <button class="icon-btn" id="theme-toggle" type="button" aria-label="Alternar tema" data-i18n-aria="aria.theme">
-        <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
-        <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z"/></svg>
-      </button>
-      <button class="icon-btn nav__menu" id="menu-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Abrir menu" data-i18n-aria="aria.menu">
-        <span></span><span></span>
-      </button>
+    <div class="map__foot">
+      <p class="map__odo" aria-hidden="true"><span data-i18n="map.odo">odômetro</span><b id="odo">000 km</b></p>
     </div>
-  </header>
+  </aside>
+
+  <div class="lang">
+    <button class="pill-btn" id="lang-toggle" type="button" aria-label="Mudar idioma / Change language">
+      <span data-lang="pt">PT</span><span class="sep">/</span><span data-lang="en">EN</span>
+    </button>
+  </div>
 
   <main id="main">
     <!-- ============ HERO ============ -->
@@ -121,12 +167,12 @@
         </p>
 
         <div class="hero__cta intro" style="--d: 11">
-          <a href="#projetos" class="btn btn--primary magnetic"><span data-i18n="hero.cta1">Ver projetos</span> <span class="btn__arrow">↓</span></a>
-          <a href="#contato" class="btn btn--ghost magnetic" data-i18n="hero.cta2">Falar comigo</a>
+          <a href="#projetos" class="btn btn--primary"><span data-i18n="hero.cta1">Ver projetos</span> <span class="btn__arrow">→</span></a>
+          <a href="#contato" class="btn btn--ghost" data-i18n="hero.cta2">Falar comigo</a>
         </div>
       </div>
 
-      <aside class="term intro tilt" style="--d: 4" aria-label="Resumo">
+      <aside class="term intro" style="--d: 4" aria-label="Resumo">
         <div class="term__bar">
           <span></span><span></span><span></span>
           <p>dev/lorenzo-jorge</p>
@@ -145,22 +191,15 @@
       </aside>
 
       <a href="#sobre" class="scroll-cue intro" style="--d: 13" aria-label="Rolar para o conteúdo">
-        <span class="scroll-cue__mouse"><span></span></span>
-        <span data-i18n="hero.hint">role para explorar</span>
+        <span class="scroll-cue__line" aria-hidden="true"></span>
+        <span data-i18n="hero.hint">role ou siga pela estrada</span>
       </a>
     </section>
-
-    <!-- faixa de stack correndo -->
-    <div class="marquee intro" style="--d: 14" aria-hidden="true">
-      <div class="marquee__track">
-        <span>Node.js</span><i>✦</i><span>NestJS</span><i>✦</i><span>.NET</span><i>✦</i><span>TypeScript</span><i>✦</i><span>C#</span><i>✦</i><span>PostgreSQL</span><i>✦</i><span>SQL Server</span><i>✦</i><span>Docker</span><i>✦</i><span>GitHub Actions</span><i>✦</i><span>Prisma</span><i>✦</i><span>React</span><i>✦</i><span>Next.js</span><i>✦</i><span>Clean Architecture</span><i>✦</i><span>SOLID</span><i>✦</i>
-      </div>
-    </div>
 
     <!-- ============ SOBRE ============ -->
     <section class="section" id="sobre">
       <header class="section__head">
-        <span class="section__index">01</span>
+        <span class="section__index">02</span>
         <h2 data-i18n="about.title">sobre</h2>
       </header>
 
@@ -232,7 +271,7 @@
     <!-- ============ STACK ============ -->
     <section class="section" id="stack">
       <header class="section__head">
-        <span class="section__index">02</span>
+        <span class="section__index">03</span>
         <h2 data-i18n="stack.title">stack</h2>
       </header>
 
@@ -268,7 +307,7 @@
     <!-- ============ PROJETOS ============ -->
     <section class="section" id="projetos">
       <header class="section__head">
-        <span class="section__index">03</span>
+        <span class="section__index">04</span>
         <h2 data-i18n="projects.title">projetos</h2>
       </header>
 
@@ -390,7 +429,7 @@
     <!-- ============ CONTATO ============ -->
     <section class="section contact" id="contato">
       <header class="section__head">
-        <span class="section__index">04</span>
+        <span class="section__index">05</span>
         <h2 data-i18n="contact.title">contato</h2>
       </header>
 
@@ -415,112 +454,13 @@
     <a href="#top" class="footer__top"><span data-i18n="footer.top">voltar ao topo</span> <span>↑</span></a>
   </footer>
 
-  <!-- ============ CHEVETTINHO (mascote / guia) ============ -->
-  <div class="buddy" id="buddy">
-    <div class="buddy__bubble" id="buddy-bubble" role="dialog" aria-live="polite" aria-labelledby="buddy-name" hidden>
-      <div class="buddy__head">
-        <p id="buddy-name"><span class="dot dot--live"></span> Chevettinho <span class="buddy__step" id="buddy-step"></span></p>
-        <button class="buddy__close" id="buddy-close" type="button" aria-label="Fechar">×</button>
-      </div>
-      <p class="buddy__text" id="buddy-text"></p>
-      <div class="buddy__actions" id="buddy-actions"></div>
+  <!-- ============ CHEVETTINHO: balão do guia ============ -->
+  <div class="buddy__bubble" id="buddy-bubble" role="dialog" aria-live="polite" aria-labelledby="buddy-name" hidden>
+    <div class="buddy__head">
+      <p id="buddy-name"><span class="dot"></span> Chevettinho <span class="buddy__step" id="buddy-step"></span></p>
+      <button class="buddy__close" id="buddy-close" type="button" aria-label="Fechar" data-i18n-aria="aria.close">×</button>
     </div>
-
-    <div class="buddy__stage" id="buddy-stage">
-      <span class="buddy__vrum" id="buddy-vrum">vrum!</span>
-      <!-- vista de frente: estacionado -->
-      <button class="buddy__car" id="buddy-car" type="button" aria-label="Chevettinho, o guia do site. Clique para conversar">
-        <svg viewBox="0 0 120 112" aria-hidden="true">
-          <defs>
-            <linearGradient id="carBody" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="#c7a8ff" />
-              <stop offset="1" stop-color="#8f5df5" />
-            </linearGradient>
-            <linearGradient id="carRoof" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="#d9c4ff" />
-              <stop offset="1" stop-color="#b18cff" />
-            </linearGradient>
-            <radialGradient id="glow" cx=".5" cy=".5" r=".5">
-              <stop offset="0" stop-color="#4ec9b0" stop-opacity=".9" />
-              <stop offset="1" stop-color="#4ec9b0" stop-opacity="0" />
-            </radialGradient>
-          </defs>
-          <ellipse class="car__shadow" cx="60" cy="106" rx="42" ry="5" />
-          <g class="car__body">
-            <line x1="84" y1="22" x2="94" y2="5" stroke="#3a3354" stroke-width="2.4" stroke-linecap="round" />
-            <circle class="car__antenna-glow" cx="94" cy="5" r="7" fill="url(#glow)" />
-            <circle cx="94" cy="5" r="3.2" fill="#4ec9b0" />
-            <rect x="18" y="84" width="18" height="20" rx="6" fill="#241f33" />
-            <rect x="84" y="84" width="18" height="20" rx="6" fill="#241f33" />
-            <path d="M30 52 L40 24 Q42 19 48 19 L72 19 Q78 19 80 24 L90 52 Z" fill="url(#carRoof)" />
-            <path d="M37 49 L45 27 Q46 25 49 25 L71 25 Q74 25 75 27 L83 49 Z" fill="#16131f" />
-            <path d="M50 28 L44 45" stroke="#e9e4ff" stroke-opacity=".35" stroke-width="3" stroke-linecap="round" />
-            <rect x="8" y="48" width="104" height="44" rx="16" fill="url(#carBody)" />
-            <rect x="8" y="48" width="104" height="10" rx="5" fill="#fff" fill-opacity=".12" />
-            <g class="car__eye">
-              <circle cx="32" cy="68" r="12" fill="#f4f0ff" stroke="#3a3354" stroke-width="2" />
-              <circle class="car__pupil" cx="32" cy="68" r="5.2" fill="#16131f" />
-              <circle class="car__pupil-shine" cx="34" cy="65.5" r="1.6" fill="#fff" />
-              <rect class="car__lid" x="19" y="55" width="26" height="26" fill="url(#carBody)" />
-            </g>
-            <g class="car__eye">
-              <circle cx="88" cy="68" r="12" fill="#f4f0ff" stroke="#3a3354" stroke-width="2" />
-              <circle class="car__pupil" cx="88" cy="68" r="5.2" fill="#16131f" />
-              <circle class="car__pupil-shine" cx="90" cy="65.5" r="1.6" fill="#fff" />
-              <rect class="car__lid" x="75" y="55" width="26" height="26" fill="url(#carBody)" />
-            </g>
-            <ellipse cx="20" cy="84" rx="5" ry="2.6" fill="#ff9bd2" fill-opacity=".45" />
-            <ellipse cx="100" cy="84" rx="5" ry="2.6" fill="#ff9bd2" fill-opacity=".45" />
-            <path d="M50 74 Q60 83 70 74" fill="none" stroke="#2a2140" stroke-width="3" stroke-linecap="round" />
-            <rect x="12" y="88" width="96" height="7" rx="3.5" fill="#3a3354" />
-            <rect x="54" y="89.5" width="12" height="4" rx="1" fill="#e9e4ff" fill-opacity=".7" />
-          </g>
-        </svg>
-      </button>
-
-      <!-- vista de lado: dirigindo -->
-      <div class="buddy__drive" id="buddy-drive" aria-hidden="true">
-        <svg viewBox="0 0 170 96">
-          <g class="drive__speed">
-            <line x1="0" y1="40" x2="22" y2="40" />
-            <line x1="6" y1="52" x2="26" y2="52" />
-            <line x1="2" y1="64" x2="18" y2="64" />
-          </g>
-          <g class="drive__puffs">
-            <circle cx="14" cy="74" r="5" />
-            <circle cx="14" cy="74" r="4" />
-            <circle cx="14" cy="74" r="3" />
-          </g>
-          <ellipse class="car__shadow" cx="96" cy="90" rx="64" ry="4.5" />
-          <g class="drive__body">
-            <line x1="46" y1="38" x2="36" y2="16" stroke="#3a3354" stroke-width="2.4" stroke-linecap="round" />
-            <circle cx="36" cy="15" r="3.4" fill="#4ec9b0" />
-            <path d="M30 76 Q22 76 22 68 L22 54 Q22 45 32 44 L54 41 L68 20 Q71 16 76 16 L118 16 Q124 16 127 20 L144 41 L156 44 Q166 46 166 56 L166 68 Q166 76 158 76 Z" fill="url(#carBody)" />
-            <path d="M58 40 L70 22 L94 22 L94 40 Z" fill="#16131f" />
-            <path d="M100 22 L120 22 L134 40 L100 40 Z" fill="#16131f" />
-            <path d="M76 25 L70 36" stroke="#e9e4ff" stroke-opacity=".3" stroke-width="3" stroke-linecap="round" />
-            <line x1="97" y1="44" x2="97" y2="70" stroke="#7a4fe0" stroke-width="1.5" />
-            <rect x="104" y="49" width="10" height="3" rx="1.5" fill="#7a4fe0" />
-            <circle cx="156" cy="56" r="7.5" fill="#f4f0ff" stroke="#3a3354" stroke-width="2" />
-            <circle cx="158.5" cy="56" r="3.4" fill="#16131f" />
-            <ellipse cx="146" cy="66" rx="4" ry="2" fill="#ff9bd2" fill-opacity=".5" />
-            <rect x="20" y="70" width="14" height="6" rx="3" fill="#3a3354" />
-            <rect x="152" y="70" width="16" height="6" rx="3" fill="#3a3354" />
-          </g>
-          <g class="drive__wheel" style="transform-origin: 58px 78px">
-            <circle cx="58" cy="78" r="13" fill="#241f33" />
-            <circle cx="58" cy="78" r="6" fill="#c7a8ff" />
-            <path d="M58 66 V72 M58 84 V90 M46 78 H52 M64 78 H70" stroke="#3a3354" stroke-width="2.4" />
-          </g>
-          <g class="drive__wheel" style="transform-origin: 136px 78px">
-            <circle cx="136" cy="78" r="13" fill="#241f33" />
-            <circle cx="136" cy="78" r="6" fill="#c7a8ff" />
-            <path d="M136 66 V72 M136 84 V90 M124 78 H130 M142 78 H148" stroke="#3a3354" stroke-width="2.4" />
-          </g>
-        </svg>
-      </div>
-    </div>
-  </div>
-
-</body>
+    <p class="buddy__text" id="buddy-text"></p>
+    <div class="buddy__actions" id="buddy-actions"></div>
+  </div></body>
 </html>

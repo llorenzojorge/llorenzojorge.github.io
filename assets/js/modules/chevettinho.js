@@ -1,46 +1,33 @@
 /**
- * Chevettinho: o mascote-guia do site.
+ * Chevettinho: o mascote-guia, que mora na estrada do minimapa.
  *
- * - Chega dirigindo e estaciona no canto da tela.
- * - Faz um tour roteirizado pelas seções: a cada parada ele atravessa a tela
- *   enquanto a página rola, mostra a placa do destino, dá meia-volta e estaciona.
+ * - Na primeira visita, chega na estrada e oferece um tour pelas paradas.
+ * - Cada "próxima parada" é uma viagem de verdade pelo roadmap.
  * - Depois do tour, responde a perguntas prontas (sem IA, sem custo, sem backend).
  */
-import { EVENTS, STORAGE_KEYS } from "../core/config.js";
-import { scrollToY, offsetOf } from "../core/scroll.js";
-import { sleep, storage, clamp } from "../core/utils.js";
+import { EVENTS, STOPS, STORAGE_KEYS } from "../core/config.js";
+import { sleep, storage } from "../core/utils.js";
 import { t } from "../i18n/index.js";
 
-const TOUR_TARGETS = ["#top", "#sobre", "#stack", "#projetos", "#contato"];
-const SECTION_LABEL_KEYS = { "#sobre": "nav.about", "#stack": "nav.stack", "#projetos": "nav.projects", "#contato": "nav.contact" };
-const FACE_LEFT = "scaleX(-1)"; // o desenho de perfil olha para a direita; espelhado, anda para a esquerda
-const HONK_INTERVAL = 16000;
-
-export function initChevettinho() {
+export function initChevettinho(roadmap) {
   const el = {
-    wrap: document.getElementById("buddy"),
+    car: roadmap.carElement,
+    button: document.getElementById("buddy-car"),
+    shout: document.getElementById("car-shout"),
     bubble: document.getElementById("buddy-bubble"),
     text: document.getElementById("buddy-text"),
     step: document.getElementById("buddy-step"),
     actions: document.getElementById("buddy-actions"),
-    car: document.getElementById("buddy-car"),
-    drive: document.getElementById("buddy-drive"),
-    shout: document.getElementById("buddy-vrum"),
     close: document.getElementById("buddy-close"),
-    road: document.getElementById("road"),
-    sign: document.getElementById("road-sign"),
-    signText: document.getElementById("road-sign-text"),
-    warp: document.getElementById("warp"),
   };
   const pupils = el.car.querySelectorAll(".car__pupil, .car__pupil-shine");
   const progress = document.createElement("div");
   progress.className = "buddy__progress";
   el.text.after(progress);
 
-  const state = { mode: null, step: 0, lastAnswer: null, busy: false, typer: null };
-  const labelOf = (selector) => (SECTION_LABEL_KEYS[selector] ? `./${t(SECTION_LABEL_KEYS[selector])}` : "~/");
+  const state = { mode: null, step: 0, lastAnswer: null, typer: null };
 
-  /* ---------- animações do carro ---------- */
+  /* ---------- o carro ---------- */
 
   function shout(word) {
     el.shout.textContent = word;
@@ -49,97 +36,35 @@ export function initChevettinho() {
     el.shout.classList.add("is-on");
   }
 
-  const popParked = () => el.car.animate(
-    [{ transform: "scale(.86) translateY(4px)" }, { transform: "scale(1.06)" }, { transform: "none" }],
-    { duration: 400, easing: "ease-out" },
-  );
-
-  /** Entrada: vem dirigindo da esquerda e estaciona no canto. */
-  async function arrive() {
-    const from = -(el.drive.getBoundingClientRect().right + 20);
-    el.road.classList.add("is-on");
-    el.wrap.classList.add("is-driving");
-    await el.drive.animate([
-      { transform: `translateX(${from}px)` },
-      { transform: "translateX(14px) rotate(-3deg)", offset: 0.86 }, // passa um pouco e freia
-      { transform: "translateX(0)" },
-    ], { duration: 1700, easing: "cubic-bezier(.25,.6,.3,1)" }).finished;
-    el.road.classList.remove("is-on");
-    el.wrap.classList.remove("is-driving");
-    shout("bi-bi!");
-    popParked();
+  /** Os olhos olham para onde o carro vai (para baixo ou para cima na estrada). */
+  function look(direction) {
+    const horizontal = window.matchMedia("(max-width: 720px)").matches;
+    const x = horizontal ? direction * 3 : 0;
+    const y = horizontal ? 0 : direction * 3;
+    pupils.forEach((p) => { p.style.transform = direction ? `translate(${x}px, ${y}px)` : ""; });
   }
 
-  /** Viagem até uma seção: atravessa a tela junto com a rolagem, mostra a placa, dá meia-volta e estaciona. */
-  async function travel(selector) {
-    state.busy = true;
-    const targetY = offsetOf(selector);
+  document.addEventListener(EVENTS.depart, (e) => {
+    hideBubble();
     shout("vrum!");
-    await el.car.animate(
-      [{ transform: "none" }, { transform: "translateY(-10px) rotate(-5deg)" }, { transform: "none" }],
-      { duration: 300, easing: "ease-out" },
-    ).finished;
-
-    const distance = el.drive.getBoundingClientRect().left - 12;
-    const at = (x, extra = "") => ({ transform: `translateX(${x}px) ${extra}` });
-    el.signText.textContent = labelOf(selector);
-    el.road.classList.add("is-on");
-    el.wrap.classList.add("is-driving");
-    el.warp.classList.toggle("is-up", targetY < window.scrollY);
-    el.warp.classList.add("is-on");
-
-    // ida: atravessa a tela para a esquerda enquanto a página rola
-    await Promise.all([
-      el.drive.animate([
-        at(0, FACE_LEFT),
-        { ...at(8, `${FACE_LEFT} rotate(-2deg)`), offset: 0.08 }, // arranca
-        at(-distance, FACE_LEFT),
-      ], { duration: 1400, easing: "cubic-bezier(.45,0,.3,1)", fill: "forwards" }).finished,
-      scrollToY(targetY, 1400),
-    ]);
-    el.warp.classList.remove("is-on");
-
-    // freia e mostra a placa do destino
-    el.sign.classList.add("is-on");
-    await el.drive.animate([
-      at(-distance, FACE_LEFT),
-      at(-distance - 10, `${FACE_LEFT} rotate(4deg)`),
-      at(-distance, FACE_LEFT),
-    ], { duration: 360, easing: "ease-out", fill: "forwards" }).finished;
-    await sleep(380);
-
-    // meia-volta
-    await el.drive.animate([
-      at(-distance, "scaleX(-1)"),
-      at(-distance, "scaleX(.05) scaleY(1.08)"),
-      at(-distance, "scaleX(1)"),
-    ], { duration: 300, easing: "ease-in-out", fill: "forwards" }).finished;
-
-    // volta para a vaga
-    setTimeout(() => el.sign.classList.remove("is-on"), 250);
-    await el.drive.animate([
-      at(-distance),
-      { ...at(12, "rotate(-3deg)"), offset: 0.86 },
-      at(0),
-    ], { duration: 1050, easing: "cubic-bezier(.3,.6,.3,1)", fill: "forwards" }).finished;
-
-    el.drive.getAnimations().forEach((animation) => animation.cancel());
-    el.road.classList.remove("is-on");
-    el.wrap.classList.remove("is-driving");
-    popParked();
-    state.busy = false;
-  }
-
-  function focusSection(selector) {
-    document.querySelectorAll(".tour-focus").forEach((s) => s.classList.remove("tour-focus"));
-    document.querySelector(selector)?.classList.add("tour-focus");
-  }
+    look(Math.sign(e.detail.index - e.detail.from));
+  });
+  document.addEventListener(EVENTS.arrive, () => look(0));
 
   /* ---------- balão de fala ---------- */
 
+  /** Posiciona o balão ao lado do carro (ou acima dele, no celular). */
+  function placeBubble() {
+    if (el.bubble.hidden) return;
+    const car = el.car.getBoundingClientRect();
+    el.bubble.style.setProperty("--bubble-y", `${car.top - 8}px`);
+    const bubble = el.bubble.getBoundingClientRect();
+    el.bubble.style.setProperty("--tip-x", `${car.left + car.width / 2 - bubble.left}px`);
+  }
+
   function type(message) {
     clearInterval(state.typer);
-    el.wrap.classList.add("is-talking");
+    el.car.classList.add("is-talking");
     el.text.innerHTML = '<span class="typing-caret"></span>';
     const caret = el.text.firstChild;
     const node = document.createTextNode("");
@@ -151,7 +76,7 @@ export function initChevettinho() {
       if (i >= message.length) {
         clearInterval(state.typer);
         caret.remove();
-        el.wrap.classList.remove("is-talking");
+        el.car.classList.remove("is-talking");
       }
     }, 18);
   }
@@ -161,7 +86,7 @@ export function initChevettinho() {
     b.type = "button";
     b.className = `buddy__btn${primary ? " buddy__btn--primary" : ""}`;
     b.textContent = label;
-    b.addEventListener("click", () => { if (!state.busy) onClick(); });
+    b.addEventListener("click", () => { if (!roadmap.isTravelling()) onClick(); });
     return b;
   }
 
@@ -170,18 +95,18 @@ export function initChevettinho() {
     el.bubble.style.animation = "none";
     void el.bubble.offsetWidth;
     el.bubble.style.animation = "";
+    placeBubble();
   }
 
   function hideBubble() {
     el.bubble.hidden = true;
     clearInterval(state.typer);
-    el.wrap.classList.remove("is-talking");
+    el.car.classList.remove("is-talking");
   }
 
   function close() {
     hideBubble();
     state.mode = null;
-    document.querySelectorAll(".tour-focus").forEach((s) => s.classList.remove("tour-focus"));
     storage.set(STORAGE_KEYS.tourDone, "1");
   }
 
@@ -214,10 +139,8 @@ export function initChevettinho() {
   }
 
   async function goToStep(step) {
-    hideBubble();
     state.step = step;
-    focusSection(TOUR_TARGETS[step]);
-    await travel(TOUR_TARGETS[step]);
+    await roadmap.travelTo(STOPS[step]);
     renderTour();
   }
 
@@ -232,10 +155,8 @@ export function initChevettinho() {
     el.actions.className = "buddy__actions buddy__actions--chips";
     el.actions.replaceChildren(...t("buddy.q").map(([question, , target], index) =>
       button(question, async () => {
-        if (target === "tour") { goToStep(0); return; }
-        hideBubble();
-        focusSection(target);
-        await travel(target);
+        if (target === "tour") { state.step = 0; await roadmap.travelTo(STOPS[0]); renderTour(); return; }
+        await roadmap.travelTo(target);
         renderChat(index);
       }),
     ));
@@ -246,13 +167,15 @@ export function initChevettinho() {
 
   /* ---------- eventos ---------- */
 
-  el.car.addEventListener("click", () => {
-    if (state.busy) return;
+  el.button.addEventListener("click", () => {
+    if (roadmap.isTravelling()) return;
     if (el.bubble.hidden) renderChat();
     else close();
   });
   el.close.addEventListener("click", close);
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !el.bubble.hidden) close(); });
+  window.addEventListener("scroll", placeBubble, { passive: true });
+  window.addEventListener("resize", placeBubble);
 
   // ao trocar de idioma, o balão aberto é redesenhado no idioma novo
   document.addEventListener(EVENTS.langChange, () => {
@@ -261,42 +184,17 @@ export function initChevettinho() {
     else if (state.mode === "chat") renderChat(state.lastAnswer);
   });
 
-  // os faróis (olhos) seguem o cursor
-  window.addEventListener("pointermove", (e) => {
-    const rect = el.car.getBoundingClientRect();
-    const dx = e.clientX - (rect.left + rect.width / 2);
-    const dy = e.clientY - (rect.top + rect.height / 2);
-    const length = Math.hypot(dx, dy) || 1;
-    const reach = Math.min(1, length / 300) * 4;
-    pupils.forEach((p) => { p.style.transform = `translate(${(dx / length) * reach}px, ${(dy / length) * reach}px)`; });
-  });
-
-  // inclina conforme a velocidade da rolagem
-  let lastY = window.scrollY, leanReset = null;
-  window.addEventListener("scroll", () => {
-    if (state.busy) return;
-    const delta = window.scrollY - lastY;
-    lastY = window.scrollY;
-    el.car.style.setProperty("--lean", `${clamp(delta * 0.35, -8, 8)}deg`);
-    clearTimeout(leanReset);
-    leanReset = setTimeout(() => el.car.style.setProperty("--lean", "0deg"), 140);
-  }, { passive: true });
-
-  // de vez em quando ele buzina para chamar atenção
-  setInterval(() => {
-    if (state.busy || !el.bubble.hidden || document.hidden || !el.wrap.classList.contains("is-ready")) return;
-    el.wrap.classList.add("is-honk");
-    shout("bi-bi!");
-    setTimeout(() => el.wrap.classList.remove("is-honk"), 950);
-  }, HONK_INTERVAL);
-
-  /** Começa a apresentação: chega dirigindo e, na primeira visita, oferece o tour. */
+  /** Apresentação: o carro cai na estrada, buzina e, na primeira visita, oferece o tour. */
   return async function start() {
-    await arrive();
-    el.wrap.classList.add("is-ready");
+    // anima o botão interno: o contêiner guarda a posição do carro na estrada
+    await el.button.animate(
+      [{ transform: "translateY(-60px)", opacity: 0 }, { offset: 0.7, opacity: 1 }, { transform: "none", opacity: 1 }],
+      { duration: 700, easing: "cubic-bezier(.3,1.4,.5,1)" },
+    ).finished;
+    shout("bi-bi!");
     if (storage.get(STORAGE_KEYS.tourDone)) return;
-    await sleep(600);
-    if (el.bubble.hidden) {
+    await sleep(700);
+    if (el.bubble.hidden && !roadmap.isTravelling()) {
       state.step = 0;
       renderTour();
     }

@@ -5,6 +5,7 @@
 export default {
   "meta.title": "Lorenzo Jorge · Desenvolvedor Full-Stack",
   skip: "Pular para o conteúdo",
+  "nav.home": "início",
   "nav.about": "sobre",
   "nav.stack": "stack",
   "nav.projects": "projetos",
@@ -14,7 +15,7 @@ export default {
   "hero.lead": "Desenvolvedor full-stack com foco em back-end. Penso a arquitetura antes do código: camadas bem definidas, regra de negócio protegida, testes e CI. <strong>Node.js, NestJS e .NET</strong>, em TypeScript ou C#.",
   "hero.cta1": "Ver projetos",
   "hero.cta2": "Falar comigo",
-  "hero.hint": "role para explorar",
+  "hero.hint": "role ou siga pela estrada",
   "term.status": "aberto a oportunidades",
   "about.title": "sobre",
   "about.big": "Um dev full-stack que pensa primeiro na <em>arquitetura</em>: código que funciona hoje e continua fácil de mudar amanhã.",
@@ -78,8 +79,10 @@ export default {
   "contact.copy": "copiar",
   "contact.copied": "e-mail copiado ✓",
   "footer.top": "voltar ao topo",
-  "aria.theme": "Alternar tema claro/escuro",
-  "aria.menu": "Abrir menu",
+  "aria.car": "Chevettinho, o guia do site. Clique para conversar",
+  "aria.close": "Fechar",
+  "map.next": "próxima parada",
+  "map.odo": "odômetro",
 
   // ---- Chevettinho ----
   "buddy.tour": "volta",
@@ -92,7 +95,7 @@ export default {
     "Primeira parada: quem é o Lorenzo. Dev full-stack com foco em back-end, que prioriza arquitetura sólida e código pronto para crescer.",
     "Aqui fica o motor: TypeScript e C# no dia a dia, com PostgreSQL e SQL Server no porta-malas. Os destacados são os de uso diário.",
     "Agora os projetos. Cada um mostra uma requisição de verdade e o que a API responde. Dá pra repetir no botão replay.",
-    "Fim da volta! Se fizer sentido para o seu time, o contato está logo aqui. Eu fico estacionado no canto se precisar.",
+    "Fim da volta! Se fizer sentido para o seu time, o contato está logo aqui. Eu fico aqui na estrada se precisar de mim.",
   ],
   "buddy.hello": "Bi-bi! Pra onde vamos?",
   "buddy.q": [
