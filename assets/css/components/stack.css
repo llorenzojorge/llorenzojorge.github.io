@@ -1,0 +1,32 @@
+/* =========================================================
+   Stack
+   Linhas de tecnologias e chips.
+   ========================================================= */
+
+/* stack */
+.stack { margin: 0; display: grid; }
+.stack__row {
+  display: grid; grid-template-columns: 220px 1fr; gap: 1rem; align-items: center;
+  padding: 1.1rem 0; border-bottom: 1px dashed var(--border);
+}
+.stack dt { color: var(--muted); font-size: .85rem; }
+.stack dt::before { content: "› "; color: var(--accent); }
+.stack dd { margin: 0; display: flex; flex-wrap: wrap; gap: .45rem; }
+
+.chip {
+  font-size: .78rem; padding: .32rem .7rem; border-radius: 8px;
+  border: 1px solid var(--border); color: var(--muted);
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  transition: border-color .2s, color .2s, transform .25s var(--spring);
+}
+.chip:hover { border-color: var(--accent); color: var(--text); transform: translateY(-2px); }
+.chip--hot { color: var(--text); border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
+.js .stack__row .chip { opacity: 0; transform: translateY(8px) scale(.96); }
+.js .stack__row.is-in .chip {
+  opacity: 1; transform: none;
+  transition: opacity .5s ease, transform .5s var(--spring), border-color .2s, color .2s;
+  transition-delay: calc(var(--c, 0) * 45ms + 150ms);
+}
+.js .stack__row.is-in .chip:hover { transform: translateY(-2px); transition-delay: 0s; }
+.legend { margin-top: 1.2rem; font-size: .75rem; color: var(--dim); display: flex; align-items: center; gap: .55rem; }
+.legend__swatch { width: 14px; height: 10px; border-radius: 3px; border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border)); background: color-mix(in srgb, var(--accent) 14%, var(--surface)); }

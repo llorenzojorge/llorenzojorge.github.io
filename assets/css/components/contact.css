@@ -1,0 +1,31 @@
+/* =========================================================
+   Contato
+   Chamada final, e-mail e links.
+   ========================================================= */
+
+/* contato */
+.contact { padding-bottom: 2rem; }
+.contact__big { font-size: clamp(2.6rem, 7.5vw, 5.8rem); line-height: 1.02; font-weight: 600; letter-spacing: -.045em; max-width: 12ch; }
+.contact__big em { font-size: 1.08em; }
+.contact__sub { margin-top: 1.4rem; color: var(--muted); max-width: 36rem; }
+.contact__mail { display: flex; flex-wrap: wrap; align-items: center; gap: .9rem; margin-top: 2.2rem; }
+.contact__email {
+  position: relative; font-size: clamp(1rem, 2.6vw, 1.45rem); text-decoration: none; color: var(--text);
+  padding-bottom: .15rem; word-break: break-all;
+  background: linear-gradient(var(--accent), var(--accent)) left bottom / 100% 2px no-repeat;
+  transition: background-size .5s var(--ease), color .3s;
+}
+.contact__email:hover { color: var(--accent); background-size: 0% 2px; background-position: right bottom; }
+.contact__links { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.8rem; }
+.contact__links a {
+  display: inline-block; padding: .55rem 1rem; border: 1px solid var(--border); border-radius: 10px;
+  text-decoration: none; font-size: .88rem; color: var(--muted);
+  transition: border-color .2s, color .2s, transform .3s var(--ease);
+}
+.contact__links a:hover { border-color: var(--accent); color: var(--text); transform: translateY(-2px); }
+
+.toast {
+  position: fixed; left: 50%; bottom: 1.5rem; transform: translateX(-50%);
+  background: var(--text); color: var(--bg); padding: .5rem .9rem; border-radius: 10px;
+  font-size: .8rem; z-index: 90; animation: pop .3s ease;
+}
