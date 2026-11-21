@@ -1,30 +1,28 @@
 /* =========================================================
    Base
-   Reset, tipografia, cores de sintaxe e barra de progresso.
+   Reset, tipografia, textura do fundo e cores de sintaxe.
    ========================================================= */
 
-/* ---------- base ---------- */
 *,
 *::before,
 *::after { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+html { scroll-padding-top: 2rem; }
 
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--font-body);
   font-size: 1rem;
-  line-height: 1.65;
+  line-height: 1.7;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
-  transition: background-color .35s ease, color .35s ease;
 }
 
 a { color: inherit; }
 p { margin: 0; }
-h1, h2, h3, h4 { margin: 0; font-weight: 700; }
+h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 ul, ol { margin: 0; padding: 0; list-style: none; }
 button { font: inherit; color: inherit; cursor: pointer; }
 img { display: block; }
@@ -33,19 +31,23 @@ img { display: block; }
 
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
 
-.nav, .term, .section__head, .chip, .stack dt, .project__meta, .project__stack, .code,
+/* rótulos técnicos em mono */
+.term, .section__index, .chip, .stack dt, .project__meta, .project__stack, .code,
 .pipeline, .led, .timeline__when, .more__name, .buddy__head, .pill-btn, .btn, .link-arrow,
 .legend, .scroll-cue, .footer, .contact__email, .id-card__role, .pillar__proof, .pillars__title,
-.more__title, .buddy__btn, .toast {
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+.more__title, .buddy__btn, .toast, .map__num, .map__label, .shift__eyebrow {
+  font-family: var(--font-mono);
 }
 
-.serif, .hero__title em, .about__big em, .contact__big em {
-  font-family: "Instrument Serif", Georgia, serif;
+/* títulos em serifa; destaque em itálico só em palavras soltas, nunca em parágrafos */
+.hero__title, .about__big, .contact__big, .section__head h2, .pillar h4, .shift__title {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+}
+.hero__title em, .about__big em, .contact__big em {
   font-style: italic;
-  font-weight: 400;
+  font-weight: 500;
   color: var(--accent);
-  letter-spacing: -.01em;
 }
 
 .skip-link {
@@ -55,14 +57,15 @@ img { display: block; }
 }
 .skip-link:focus { top: 1rem; }
 
-#topology { position: fixed; inset: 0; z-index: -1; width: 100%; height: 100%; pointer-events: none; }
-
-/* barra de progresso da leitura */
-.progress { position: fixed; inset: 0 0 auto; height: 2px; z-index: 70; pointer-events: none; }
-.progress span {
-  display: block; height: 100%; width: 100%;
-  background: linear-gradient(90deg, var(--accent), var(--teal));
-  transform-origin: left; transform: scaleX(0);
+/* fundo estático: textura de concreto + curvas de nível (nada segue o cursor) */
+.backdrop {
+  position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background-image:
+    url("../img/topography.svg"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .08 0 0 0 0 .09 0 0 0 0 .11 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: no-repeat, repeat;
+  background-position: right -12vw top -8vh, 0 0;
+  background-size: min(1100px, 85vw) auto, 180px 180px;
 }
 
 /* ---------- sintaxe ---------- */
@@ -77,9 +80,4 @@ img { display: block; }
 .c-orange { color: var(--orange); }
 
 .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--teal); vertical-align: middle; }
-.dot--live { animation: pulse 1.8s ease-out infinite; }
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--teal) 60%, transparent); }
-  100% { box-shadow: 0 0 0 8px transparent; }
-}
 @keyframes blink { 50% { opacity: 0; } }

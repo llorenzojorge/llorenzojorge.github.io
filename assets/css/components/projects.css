@@ -8,25 +8,21 @@
 .project {
   display: grid; grid-template-columns: 1fr 1.05fr; gap: 2rem;
   padding: clamp(1.4rem, 3vw, 2.2rem);
-  background: color-mix(in srgb, var(--surface) 84%, transparent);
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 20px;
+  border-radius: 18px;
+  box-shadow: var(--shadow);
   position: relative; overflow: hidden;
+  transition: border-color .3s, transform .4s var(--ease);
 }
-.project::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none;
-  background: radial-gradient(420px circle at var(--mx, -500px) var(--my, -500px), var(--glow), transparent 60%);
-  opacity: 0; transition: opacity .4s;
-}
-.project:hover::before { opacity: 1; }
-.project:hover { border-color: var(--border-strong); }
+.project:hover { border-color: var(--text); }
 .project__info { position: relative; display: flex; flex-direction: column; gap: .8rem; }
 .project__meta { font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
-.project h3 { font-family: "JetBrains Mono", monospace; font-size: clamp(1.3rem, 2.6vw, 1.7rem); letter-spacing: -.02em; }
+.project h3 { font-family: var(--font-mono); font-size: clamp(1.3rem, 2.6vw, 1.7rem); letter-spacing: -.02em; }
 .project__desc { color: var(--text); opacity: .92; }
 .project__points { display: grid; gap: .4rem; color: var(--muted); font-size: .92rem; }
 .project__points li { padding-left: 1.2rem; position: relative; }
-.project__points li::before { content: "→"; position: absolute; left: 0; color: var(--teal); font-size: .85em; }
+.project__points li::before { content: "→"; position: absolute; left: 0; color: var(--accent); font-size: .85em; }
 .project__stack { font-size: .74rem; color: var(--dim); margin-top: auto; padding-top: .4rem; }
 .link-arrow {
   align-self: flex-start; display: inline-flex; gap: .35rem;
@@ -74,18 +70,18 @@
 .flow { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; }
 .flow__step { padding: .15rem .55rem; border: 1px dashed var(--border-strong); border-radius: 6px; color: var(--dim); }
 .flow__step--done { border-style: solid; color: var(--muted); }
-.flow__step--on { border-style: solid; border-color: var(--accent); color: var(--accent); background: var(--glow); }
+.flow__step--on { border-style: solid; border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 16%, transparent); }
 .flow__arrow { color: var(--dim); }
 
 .pipeline { align-items: center; gap: 0; text-align: center; }
 .pipe__node { padding: .45rem .9rem; border: 1px solid var(--border-strong); border-radius: 10px; color: var(--text); background: var(--surface); }
 .pipe__node small { color: var(--dim); margin-left: .35rem; }
-.pipe__node--out { border-color: var(--teal); box-shadow: 0 0 24px -8px var(--teal); }
+.pipe__node--out { border-color: var(--teal); }
 .pipe__node--out small { color: var(--teal); }
 .pipe__line {
   width: 1px; height: 18px;
   background: repeating-linear-gradient(var(--accent) 0 4px, transparent 4px 8px);
-  animation: flow-down .8s linear infinite;
+
 }
 @keyframes flow-down { to { background-position: 0 8px; } }
 .pipe__group { display: flex; gap: .4rem; flex-wrap: wrap; justify-content: center; }

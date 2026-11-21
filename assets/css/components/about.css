@@ -26,7 +26,7 @@
   width: 7px; height: 7px; border-radius: 50%;
   background: var(--bg); border: 1.5px solid var(--accent);
 }
-.timeline li:first-child::before { background: var(--accent); box-shadow: 0 0 0 4px var(--glow); }
+.timeline li:first-child::before { background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
 .timeline__when { font-size: .74rem; color: var(--dim); }
 .timeline__what { font-weight: 600; margin-top: .1rem; }
 .timeline__desc { color: var(--muted); font-size: .9rem; margin-top: .25rem; }
@@ -47,7 +47,7 @@
 }
 .pillar::before {
   content: ""; position: absolute; inset: auto -30% -60% auto; width: 70%; aspect-ratio: 1;
-  background: radial-gradient(circle, var(--glow), transparent 70%);
+  background: radial-gradient(circle, var(--accent-soft), transparent 70%);
   opacity: 0; transition: opacity .5s;
 }
 .pillar:hover { border-color: color-mix(in srgb, var(--accent) 50%, var(--border)); transform: translateY(-4px); }
@@ -60,4 +60,4 @@
 .pillar__icon svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .pillar h4 { font-size: 1.08rem; letter-spacing: -.02em; margin-top: .3rem; }
 .pillar p { color: var(--muted); font-size: .92rem; }
-.pillar__proof { margin-top: auto; padding-top: .4rem; font-size: .72rem; color: var(--teal); }
+.pillar__proof { margin-top: auto; padding-top: .4rem; font-size: .72rem; color: var(--accent); }
