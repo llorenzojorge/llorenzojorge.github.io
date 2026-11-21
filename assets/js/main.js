@@ -1,8 +1,8 @@
 /**
  * Ponto de entrada. Inicializa cada módulo e coordena a sequência de abertura:
- * tela de boot → título e terminal animando.
+ * tela de boot → título e terminal animando → Chevettinho chegando dirigindo.
  */
-import { root } from "./core/utils.js";
+import { root, sleep } from "./core/utils.js";
 import { applyTranslations, initLanguageToggle } from "./i18n/index.js";
 import { initTheme } from "./modules/theme.js";
 import { initNavigation } from "./modules/navigation.js";
@@ -12,6 +12,7 @@ import { initProjects } from "./modules/projects.js";
 import { initContact } from "./modules/contact.js";
 import { initBackground } from "./modules/background.js";
 import { playBoot } from "./modules/boot.js";
+import { initChevettinho } from "./modules/chevettinho.js";
 
 initTheme(document.getElementById("theme-toggle"));
 initLanguageToggle(document.getElementById("lang-toggle"));
@@ -22,6 +23,7 @@ initHero();
 initProjects();
 initContact();
 initBackground(document.getElementById("topology"));
+const startChevettinho = initChevettinho();
 
 (async () => {
   window.scrollTo(0, 0);
@@ -29,4 +31,6 @@ initBackground(document.getElementById("topology"));
   root.classList.add("is-loaded");
   playSplit(document.querySelector(".hero__title"), 150);
   playTerminal();
+  await sleep(1200);
+  startChevettinho();
 })();
