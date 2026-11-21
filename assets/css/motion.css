@@ -1,0 +1,151 @@
+/* =========================================================
+   MOTION · fundo, abertura e a viagem do Chevettinho
+   O site anima sempre, mesmo com "efeitos de animação"
+   desligados no sistema (decisão de design do dono do site).
+   ========================================================= */
+
+/* aurora: manchas de luz que se movem devagar */
+.aurora { position: fixed; inset: 0; z-index: -3; overflow: hidden; pointer-events: none; }
+/* gradiente radial em vez de filter: blur (bem mais leve para a GPU) */
+.aurora i {
+  position: absolute; width: 70vmax; height: 70vmax; border-radius: 50%;
+  opacity: .5; will-change: transform;
+}
+.aurora i:nth-child(1) { background: radial-gradient(circle, #6d3df2 0%, rgba(109, 61, 242, .35) 30%, transparent 68%); top: -30vmax; left: -20vmax; animation: float-a 26s ease-in-out infinite alternate; }
+.aurora i:nth-child(2) { background: radial-gradient(circle, #2d3dbf 0%, rgba(45, 61, 191, .35) 30%, transparent 68%); bottom: -35vmax; right: -25vmax; animation: float-b 32s ease-in-out infinite alternate; }
+.aurora i:nth-child(3) { background: radial-gradient(circle, #1f8f7d 0%, rgba(31, 143, 125, .3) 30%, transparent 68%); width: 40vmax; height: 40vmax; top: 35%; left: 45%; opacity: .25; animation: float-c 22s ease-in-out infinite alternate; }
+@keyframes float-a { to { transform: translate(28vw, 22vh) scale(1.15); } }
+@keyframes float-b { to { transform: translate(-30vw, -18vh) scale(.9); } }
+@keyframes float-c { to { transform: translate(-35vw, 15vh) scale(1.3); } }
+[data-theme="light"] .aurora i { opacity: .2; }
+[data-theme="light"] .aurora i:nth-child(3) { opacity: .1; }
+
+/* sem backdrop-filter: borrar um fundo animado a cada quadro custa caro */
+.nav { backdrop-filter: none; -webkit-backdrop-filter: none; background: color-mix(in srgb, var(--surface) 94%, transparent); }
+.term { backdrop-filter: none; }
+
+/* grade que acende em volta do cursor */
+.grid-spot {
+  position: fixed; inset: 0; z-index: -2; pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgba(var(--node), .1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(var(--node), .1) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(340px circle at var(--cx, 50%) var(--cy, 30%), #000 0%, transparent 70%);
+  mask-image: radial-gradient(340px circle at var(--cx, 50%) var(--cy, 30%), #000 0%, transparent 70%);
+}
+
+/* abertura */
+.boot {
+  position: fixed; inset: 0; z-index: 200;
+  display: grid; place-items: center;
+  background: #0b0a12;
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 1s cubic-bezier(.76, 0, .24, 1);
+}
+.boot.is-done { clip-path: inset(0 0 100% 0); }
+.boot.is-gone { display: none; }
+.boot__inner { width: min(360px, 80vw); font-family: "JetBrains Mono", monospace; color: #e9e4ff; font-size: .85rem; }
+.boot__line { min-height: 1.4em; }
+.boot__bar { margin-top: 1rem; height: 2px; background: #2c2640; border-radius: 2px; overflow: hidden; }
+.boot__bar span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #b18cff, #4ec9b0); box-shadow: 0 0 12px #b18cff; }
+.boot__meta { display: flex; justify-content: space-between; margin-top: .6rem; font-size: .7rem; color: #645c80; }
+html:not(.js) .boot { display: none; }
+
+/* faixa de stack correndo */
+.marquee {
+  width: 100vw; margin-left: calc(50% - 50vw);
+  margin-top: 1rem;
+  border-block: 1px solid var(--border);
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+.marquee__track {
+  display: flex; align-items: center; gap: 1.8rem; width: max-content;
+  padding: 1.1rem 0;
+  font-family: "JetBrains Mono", monospace; font-size: .95rem; color: var(--muted);
+  animation: marquee 38s linear infinite;
+}
+.marquee__track i { font-style: normal; color: var(--accent); font-size: .7rem; }
+.marquee:hover .marquee__track { animation-play-state: paused; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+/* terminal com inclinação 3D e borda luminosa girando */
+.is-loaded .term.intro {
+  transition: opacity .9s var(--ease), transform .25s ease-out;
+  transition-delay: calc(var(--d, 0) * 90ms + 150ms), 0s;
+}
+.term::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; z-index: 2;
+  background: conic-gradient(from var(--angle), transparent 0 68%, #b18cff 80%, #4ec9b0 88%, transparent 96%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: orbit 5s linear infinite;
+  pointer-events: none;
+}
+.term { position: relative; }
+@property --angle { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+@keyframes orbit { to { --angle: 360deg; } }
+
+/* efeito de velocidade durante a viagem */
+.warp {
+  position: fixed; inset: 0; z-index: 55; pointer-events: none; opacity: 0;
+  background-image:
+    repeating-linear-gradient(90deg, transparent 0 46px, rgba(var(--node), .25) 46px 47px, transparent 47px 140px),
+    repeating-linear-gradient(90deg, transparent 0 90px, rgba(78, 201, 176, .2) 90px 91px, transparent 91px 230px);
+  -webkit-mask-image: repeating-linear-gradient(180deg, #000 0 60px, transparent 60px 190px);
+  mask-image: repeating-linear-gradient(180deg, #000 0 60px, transparent 60px 190px);
+  transition: opacity .35s ease;
+}
+.warp.is-on { opacity: 1; animation: warp-down .3s linear infinite; }
+.warp.is-on.is-up { animation-name: warp-up; }
+@keyframes warp-down { to { -webkit-mask-position: 0 -190px; mask-position: 0 -190px; } }
+@keyframes warp-up { to { -webkit-mask-position: 0 190px; mask-position: 0 190px; } }
+
+/* estrada que aparece embaixo da tela */
+.road {
+  position: fixed; left: 0; right: 0; bottom: clamp(.75rem, 2.5vw, 1.75rem); height: 10px; z-index: 58;
+  pointer-events: none; opacity: 0; transition: opacity .35s ease;
+}
+.road.is-on { opacity: 1; }
+.road__lane {
+  position: absolute; inset: auto 0 0 0; height: 3px;
+  background: repeating-linear-gradient(90deg, rgba(var(--node), .6) 0 26px, transparent 26px 48px);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.road.is-on .road__lane { animation: lane .25s linear infinite; }
+@keyframes lane { to { background-position: 48px 0; } }
+.road__sign {
+  position: absolute; left: clamp(1.5rem, 4vw, 3rem); bottom: 100px;
+  display: inline-flex; align-items: center; gap: .45rem;
+  padding: .45rem .75rem; border-radius: 10px;
+  background: var(--accent); color: var(--accent-ink);
+  font: 700 .8rem "JetBrains Mono", monospace; white-space: nowrap;
+  box-shadow: 0 12px 30px -10px var(--accent);
+  transform-origin: bottom center; transform: translateY(14px) scale(.4); opacity: 0;
+  transition: transform .5s var(--spring), opacity .25s ease;
+}
+.road__sign::after {
+  content: ""; position: absolute; left: 50%; top: 100%; width: 10px; height: 10px; background: var(--accent); transform: translate(-50%, -5px) rotate(45deg); z-index: -1;
+}
+.road__sign.is-on { transform: none; opacity: 1; }
+.road__pin { width: 7px; height: 7px; border-radius: 50%; background: var(--accent-ink); animation: pulse-soft 1s ease-in-out infinite; }
+
+/* Chevettinho: "vrum!", inclinação ao rolar e buzinada */
+.buddy__vrum {
+  position: absolute; right: 70%; top: -6px; z-index: 2;
+  font: 800 .78rem "JetBrains Mono", monospace; color: var(--accent);
+  opacity: 0; pointer-events: none; white-space: nowrap;
+}
+.buddy__vrum.is-on { animation: vrum .9s var(--spring) forwards; }
+@keyframes vrum {
+  0% { opacity: 0; transform: scale(.4) rotate(-12deg); }
+  25% { opacity: 1; transform: scale(1.15) rotate(-8deg) translateY(-6px); }
+  70% { opacity: 1; transform: scale(1) rotate(-8deg) translateY(-10px); }
+  100% { opacity: 0; transform: scale(.9) rotate(-8deg) translateY(-18px); }
+}
+.buddy__car svg { transform: rotate(var(--lean, 0deg)); transition: transform .2s ease-out; }
+.buddy.is-honk .car__body { animation: honk .45s ease-in-out 2; }
+@keyframes honk { 25% { transform: translateY(-4px) rotate(-3deg); } 75% { transform: translateY(-2px) rotate(3deg); } }
