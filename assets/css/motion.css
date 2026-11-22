@@ -23,34 +23,38 @@
 .boot__meta { display: flex; justify-content: space-between; margin-top: .6rem; font-size: .7rem; color: #6c7180; }
 html:not(.js) .boot { display: none; }
 
-/* ---------- transição entre paradas ---------- */
-.shift {
+/* ---------- transição: o mapa visto de cima ---------- */
+.atlas {
   position: fixed; inset: 0 0 0 var(--map-w); z-index: 45;
   pointer-events: none; overflow: hidden;
-  display: grid; place-items: center;
-  visibility: hidden;
+  background: var(--bg);
+  visibility: hidden; opacity: 0;
 }
-.shift.is-on { visibility: visible; }
+.atlas.is-on { visibility: visible; }
+.atlas__svg { width: 100%; height: 100%; display: block; }
+.atlas__world { transform-origin: 0 0; transform-box: view-box; }
 
-/* faixa de asfalto que passa por baixo da placa */
-.shift__road {
-  position: absolute; left: 0; right: 0; top: 50%; height: 120px; margin-top: -60px;
-  background:
-    repeating-linear-gradient(to right, var(--bg) 0 46px, transparent 46px 92px) center / 100% 3px no-repeat,
-    var(--text);
-  transform: scaleX(0); transform-origin: right;
-}
-.shift.is-on .shift__road { animation: lane .32s linear infinite; }
-@keyframes lane { to { background-position: -92px 50%, 0 0; } }
+.atlas__contours ellipse { fill: none; stroke: var(--text); stroke-opacity: .07; }
+.atlas__road, .atlas__done, .atlas__lane { fill: none; stroke-linecap: round; }
+.atlas__road { stroke: var(--asphalt); stroke-width: 30; }
+.atlas__done { stroke: var(--accent); stroke-width: 30; }
+.atlas__lane { stroke: var(--lane); stroke-width: 2; stroke-dasharray: 10 12; opacity: .7; }
 
-/* placa do destino */
-.shift__sign {
-  position: relative;
-  display: grid; gap: .3rem; justify-items: start;
-  padding: 1.1rem 1.6rem 1.2rem;
-  background: var(--accent); color: var(--accent-ink);
-  border-radius: 14px;
-  box-shadow: 0 30px 60px -30px rgba(20, 22, 27, .55);
+.atlas__city circle { fill: var(--bg); stroke: var(--lane); stroke-width: 5; transition: fill .3s, stroke .3s; }
+.atlas__city text {
+  fill: var(--muted); text-anchor: middle;
+  font-family: var(--font-display); font-size: 30px; font-weight: 600;
 }
-.shift__eyebrow { font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; opacity: .8; }
-.shift__title { font-size: clamp(2.2rem, 6vw, 4rem); font-weight: 600; line-height: 1; letter-spacing: -.02em; }
+.atlas__num { font-family: var(--font-mono); font-size: 18px; fill: var(--dim); }
+.atlas__city.is-from circle { stroke: var(--accent); }
+.atlas__city.is-to circle { fill: var(--accent); stroke: var(--accent); }
+.atlas__city.is-to text { fill: var(--text); }
+.atlas__city.is-to .atlas__num { fill: var(--accent); }
+.atlas__car use { filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .6)); }
+
+.atlas__caption {
+  position: absolute; left: clamp(1.25rem, 3vw, 2.5rem); bottom: clamp(1.25rem, 3vw, 2rem);
+  font-family: var(--font-mono); font-size: .75rem; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--muted);
+}
+.atlas__caption b { color: var(--accent); font-weight: 700; }

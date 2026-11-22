@@ -1,7 +1,9 @@
 /* =========================================================
    Minimapa
-   A navegação do site é uma estrada: cada seção é uma parada
-   e o Chevettinho mostra onde o visitante está.
+   A navegação do site é uma estrada em serpentina: cada seção
+   é uma parada e o Chevettinho mostra onde o visitante está.
+   As curvas, as paradas e o carro são posicionados pelo
+   módulo roadmap.js a partir do tamanho da barra.
    ========================================================= */
 
 .map {
@@ -9,7 +11,7 @@
   width: var(--map-w);
   display: flex; flex-direction: column;
   padding: 1.6rem 1.1rem 1.4rem;
-  background: var(--surface);
+  background: var(--sidebar);
   border-right: 1px solid var(--border);
 }
 
@@ -22,54 +24,42 @@
 .map__name { font-family: var(--font-mono); font-size: .64rem; color: var(--muted); letter-spacing: .04em; }
 
 /* a estrada */
-.map__route { position: relative; flex: 1; margin: 2.4rem 0 1.6rem; }
-.map__road {
-  position: absolute; top: -6px; bottom: -6px; left: 17px; width: 14px;
-  border-radius: 7px;
-  background:
-    repeating-linear-gradient(to bottom, var(--surface) 0 7px, transparent 7px 16px) center / 2px 100% no-repeat,
-    var(--text);
-}
-/* trecho já percorrido fica em cobalto */
-.map__road::after {
-  content: ""; position: absolute; left: 0; right: 0; top: 0;
-  height: var(--travelled, 0px);
-  border-radius: 7px;
-  background:
-    repeating-linear-gradient(to bottom, var(--surface) 0 7px, transparent 7px 16px) center / 2px 100% no-repeat,
-    var(--accent);
-}
+.map__route { position: relative; flex: 1; margin: 2rem -1.1rem 1.4rem; }
+.map__svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.map__svg path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.map__asphalt { stroke: var(--asphalt); stroke-width: 15; }
+.map__done { stroke: var(--accent); stroke-width: 15; opacity: .9; }
+.map__lane { stroke: var(--lane); stroke-width: 1.6; stroke-dasharray: 6 8; opacity: .7; }
 
-.map__stops {
-  position: absolute; inset: 0;
-  display: flex; flex-direction: column; justify-content: space-between;
-}
+/* paradas: cada uma é posicionada sobre a curva (--x, --y) */
+.map__stops { position: absolute; inset: 0; }
+.map__stops li { position: absolute; left: 0; right: 0; top: var(--y, 0); transform: translateY(-50%); }
 .map__stop {
   position: relative;
-  display: flex; align-items: center; gap: .75rem;
-  padding-left: 48px; min-height: 28px;
+  display: flex; align-items: center; gap: .55rem;
+  padding-left: calc(var(--x, 30px) + 17px); min-height: 30px;
   text-decoration: none; color: var(--muted);
   transition: color .25s;
 }
 .map__dot {
-  position: absolute; left: 14px; top: 50%; width: 20px; height: 20px; margin-top: -10px;
-  border-radius: 50%; background: var(--surface); border: 2px solid var(--text);
+  position: absolute; left: var(--x, 30px); top: 50%; width: 18px; height: 18px; margin: -9px 0 0 -9px;
+  border-radius: 50%; background: var(--sidebar); border: 2.5px solid var(--lane);
   transition: background .25s, border-color .25s, transform .3s var(--spring);
 }
-.map__num { font-size: .66rem; color: var(--dim); }
-.map__label { font-size: .8rem; font-weight: 500; }
+.map__num { font-family: var(--font-mono); font-size: .64rem; color: var(--dim); }
+.map__label { font-family: var(--font-mono); font-size: .78rem; font-weight: 500; }
 .map__stop:hover { color: var(--text); }
-.map__stop:hover .map__dot { transform: scale(1.15); }
+.map__stop:hover .map__dot { transform: scale(1.18); }
 .map__stop.is-passed .map__dot { border-color: var(--accent); }
 .map__stop.is-active { color: var(--text); }
 .map__stop.is-active .map__num { color: var(--accent); }
 .map__stop.is-active .map__dot { background: var(--accent); border-color: var(--accent); }
 
-/* o carrinho anda sobre a estrada */
+/* o carrinho anda e vira junto com a curva */
 .map__car {
-  position: absolute; left: 4px; top: 0; z-index: 2;
-  width: 40px; height: 38px;
-  transform: translateY(calc(var(--car-y, 0px) - 19px));
+  position: absolute; left: 0; top: 0; z-index: 2;
+  width: 24px; height: 39px;
+  transform: translate(calc(var(--car-x, 0px) - 12px), calc(var(--car-y, 0px) - 19.5px)) rotate(var(--car-rot, 180deg));
   will-change: transform;
 }
 

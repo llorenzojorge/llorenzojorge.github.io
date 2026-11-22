@@ -5,17 +5,15 @@
    ========================================================= */
 
 @media (max-width: 1100px) {
-  :root { --map-w: 76px; }
+  :root { --map-w: 84px; }
   .map { padding-inline: .5rem; align-items: center; }
   .map__name, .map__odo span:first-child { display: none; }
-  .map__route { width: 100%; }
-  .map__road { left: 50%; margin-left: -7px; }
-  .map__car { left: 50%; margin-left: -20px; }
-  .map__stop { padding-left: 0; justify-content: center; }
-  .map__dot { left: 50%; margin-left: -10px; }
+  .map__route { width: calc(100% + 1rem); margin-inline: -.5rem; }
+  .map__stop { padding-left: 0; }
   .map__num { display: none; }
+  /* no tablet o nome da parada vira uma dica ao passar o mouse */
   .map__label {
-    position: absolute; left: calc(50% + 22px); white-space: nowrap;
+    position: absolute; left: calc(var(--x) + 16px); white-space: nowrap; z-index: 4;
     padding: .25rem .55rem; border-radius: 6px;
     background: var(--text); color: var(--bg); font-size: .72rem;
     opacity: 0; transform: translateX(-4px); pointer-events: none;
@@ -24,7 +22,6 @@
   .map__stop:hover .map__label, .map__stop:focus-visible .map__label { opacity: 1; transform: none; }
   .map__odo { justify-content: center; }
 }
-
 @media (max-width: 960px) {
   .hero { grid-template-columns: 1fr; grid-template-rows: auto; padding-top: 4rem; min-height: auto; gap: 2.5rem; }
   .term { max-width: 440px; }
@@ -39,37 +36,26 @@
   :root { --map-w: 0px; --bar-h: 68px; }
   body { padding-left: 0; padding-bottom: var(--bar-h); }
 
-  /* a estrada deita na base da tela */
+  /* a estrada deita na base da tela e as curvas viram ondas */
   .map {
     inset: auto 0 0 0; width: auto; height: var(--bar-h);
-    flex-direction: row; align-items: center;
-    padding: 0 1rem;
+    flex-direction: row; align-items: stretch;
+    padding: 0 .75rem;
     border-right: 0; border-top: 1px solid var(--border);
   }
   .map__brand, .map__foot { display: none; }
-  .map__route { margin: 0; height: 100%; flex: 1; }
-  .map__road { top: 50%; bottom: auto; left: 0; right: 0; width: auto; height: 12px; margin: -6px 0 0; border-radius: 6px;
-    background:
-      repeating-linear-gradient(to right, var(--surface) 0 7px, transparent 7px 16px) center / 100% 2px no-repeat,
-      var(--text);
-  }
-  .map__road::after { top: 0; bottom: 0; left: 0; right: auto; height: auto; width: var(--travelled, 0px); border-radius: 6px;
-    background:
-      repeating-linear-gradient(to right, var(--surface) 0 7px, transparent 7px 16px) center / 100% 2px no-repeat,
-      var(--accent);
-  }
-  .map__stops { flex-direction: row; align-items: center; }
-  .map__stop { width: 36px; min-height: 100%; justify-content: center; padding: 0; }
-  .map__dot { left: 50%; margin-left: -9px; width: 18px; height: 18px; margin-top: -9px; }
+  .map__route { margin: 0; height: 100%; width: auto; flex: 1; }
+  .map__asphalt, .map__done { stroke-width: 11; }
+  .map__stops li { left: var(--x); right: auto; width: 32px; margin-left: -16px; }
+  .map__stop { padding: 0; justify-content: center; min-height: 32px; }
+  .map__dot { left: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; }
   .map__label { display: none; }
-  .map__car { top: 50%; left: 0; margin: 0; width: 34px; height: 32px;
-    transform: translate(calc(var(--car-x, 0px) - 17px), -26px);
+  .map__car {
+    width: 18px; height: 29px;
+    transform: translate(calc(var(--car-x, 0px) - 9px), calc(var(--car-y, 0px) - 14.5px)) rotate(var(--car-rot, 90deg));
   }
-  .car__shout { left: 50%; top: -18px; margin-left: -1.2rem; }
-
   .lang { top: .8rem; right: .8rem; }
-  .shift { inset: 0 0 var(--bar-h) 0; }
-  .shift__road { height: 90px; margin-top: -45px; }
+  .atlas { inset: 0 0 var(--bar-h) 0; }
 
   .buddy__bubble {
     left: .75rem; right: .75rem; top: auto; bottom: calc(var(--bar-h) + 14px);
@@ -77,7 +63,7 @@
   }
   .buddy__bubble::before {
     left: var(--tip-x, 50%); top: auto; bottom: -7px; margin-left: -6px;
-    border-left: 0; border-bottom: 1px solid var(--text); border-right: 1px solid var(--text);
+    border-left: 0; border-bottom: 1px solid var(--border-strong); border-right: 1px solid var(--border-strong);
   }
 
   main, .footer { width: calc(100% - 2rem); }

@@ -20,7 +20,6 @@ export function initChevettinho(roadmap) {
     actions: document.getElementById("buddy-actions"),
     close: document.getElementById("buddy-close"),
   };
-  const pupils = el.car.querySelectorAll(".car__pupil, .car__pupil-shine");
   const progress = document.createElement("div");
   progress.className = "buddy__progress";
   el.text.after(progress);
@@ -36,20 +35,10 @@ export function initChevettinho(roadmap) {
     el.shout.classList.add("is-on");
   }
 
-  /** Os olhos olham para onde o carro vai (para baixo ou para cima na estrada). */
-  function look(direction) {
-    const horizontal = window.matchMedia("(max-width: 720px)").matches;
-    const x = horizontal ? direction * 3 : 0;
-    const y = horizontal ? 0 : direction * 3;
-    pupils.forEach((p) => { p.style.transform = direction ? `translate(${x}px, ${y}px)` : ""; });
-  }
-
-  document.addEventListener(EVENTS.depart, (e) => {
+  document.addEventListener(EVENTS.depart, () => {
     hideBubble();
     shout("vrum!");
-    look(Math.sign(e.detail.index - e.detail.from));
   });
-  document.addEventListener(EVENTS.arrive, () => look(0));
 
   /* ---------- balão de fala ---------- */
 
@@ -64,7 +53,7 @@ export function initChevettinho(roadmap) {
 
   function type(message) {
     clearInterval(state.typer);
-    el.car.classList.add("is-talking");
+    el.bubble.classList.add("is-talking");
     el.text.innerHTML = '<span class="typing-caret"></span>';
     const caret = el.text.firstChild;
     const node = document.createTextNode("");
@@ -76,7 +65,7 @@ export function initChevettinho(roadmap) {
       if (i >= message.length) {
         clearInterval(state.typer);
         caret.remove();
-        el.car.classList.remove("is-talking");
+        el.bubble.classList.remove("is-talking");
       }
     }, 18);
   }
@@ -101,7 +90,7 @@ export function initChevettinho(roadmap) {
   function hideBubble() {
     el.bubble.hidden = true;
     clearInterval(state.typer);
-    el.car.classList.remove("is-talking");
+    el.bubble.classList.remove("is-talking");
   }
 
   function close() {

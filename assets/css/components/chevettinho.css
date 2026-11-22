@@ -13,20 +13,22 @@
 .car-btn:focus-visible { outline-offset: 2px; border-radius: 10px; }
 .car-btn svg { width: 100%; height: 100%; overflow: visible; display: block; }
 
-/* parado: só pisca de vez em quando. Andando: balança no ritmo da estrada. */
-.car__shadow { fill: var(--text); opacity: .18; }
-.car__pupil, .car__pupil-shine { transition: transform .25s ease; }
+/* visto de cima: sombra no asfalto; andando, trepida de leve */
+.car-btn svg { filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .55)); }
+.map__car.is-driving .car-btn svg { animation: rumble .12s linear infinite alternate; }
+@keyframes rumble { to { transform: translateX(.6px); } }
+
+/* avatar de frente no balão: só pisca de vez em quando */
 .car__lid { transform-box: fill-box; transform-origin: top; transform: scaleY(0); animation: lids 6s infinite; }
 @keyframes lids { 0%, 94%, 100% { transform: scaleY(0); } 96% { transform: scaleY(1); } }
-.car__body { transform-origin: 60px 100px; }
-.map__car.is-driving .car__body { animation: bump .16s ease-in-out infinite alternate; }
-@keyframes bump { to { transform: translateY(-2px) rotate(-1.5deg); } }
-.map__car.is-talking .car__body { animation: talk .5s ease-in-out infinite; }
+.buddy__avatar { width: 26px; height: 22px; flex: none; }
+.buddy__bubble.is-talking .buddy__avatar { animation: talk .5s ease-in-out infinite; }
 @keyframes talk { 50% { transform: translateY(-1.5px); } }
 
-/* "vrum!" ao sair */
+/* "vrum!" ao sair (fica fora do carro para não girar junto) */
 .car__shout {
-  position: absolute; left: 100%; top: -4px; margin-left: 2px;
+  position: absolute; z-index: 3;
+  left: calc(var(--car-x, 0px) + 16px); top: calc(var(--car-y, 0px) - 28px);
   font: 700 .7rem var(--font-mono); color: var(--accent); white-space: nowrap;
   opacity: 0; pointer-events: none;
 }
@@ -45,7 +47,7 @@
   top: clamp(1rem, var(--bubble-y, 40vh), calc(100vh - 17rem));
   width: min(340px, calc(100vw - var(--map-w) - 2rem));
   background: var(--surface);
-  border: 1px solid var(--text);
+  border: 1px solid var(--border-strong);
   border-radius: 14px;
   box-shadow: var(--shadow);
   padding: .9rem 1rem 1rem;
@@ -55,7 +57,7 @@
 .buddy__bubble::before {
   content: ""; position: absolute; left: -7px; top: 22px;
   width: 12px; height: 12px; background: var(--surface);
-  border-left: 1px solid var(--text); border-bottom: 1px solid var(--text);
+  border-left: 1px solid var(--border-strong); border-bottom: 1px solid var(--border-strong);
   transform: rotate(45deg);
 }
 .buddy__bubble[hidden] { display: none; }

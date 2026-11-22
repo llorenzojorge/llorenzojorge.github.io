@@ -62,15 +62,42 @@
     </div>
   </div>
 
-  <!-- placa que cruza a tela na transição entre paradas -->
-  <div class="shift" id="shift" aria-hidden="true">
-    <div class="shift__road"></div>
-    <div class="shift__sign">
-      <span class="shift__eyebrow"><span data-i18n="map.next">próxima parada</span> · <span id="shift-num">02</span></span>
-      <span class="shift__title" id="shift-title">sobre</span>
-    </div>
+  <!-- transição: a câmera sobe, mostra o site como um mapa, o carro dirige e ela desce no destino -->
+  <div class="atlas" id="atlas" aria-hidden="true">
+    <svg class="atlas__svg" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet">
+      <g class="atlas__world" id="atlas-world">
+        <g class="atlas__contours">
+          <ellipse cx="300" cy="300" rx="260" ry="170"/><ellipse cx="300" cy="300" rx="170" ry="105"/><ellipse cx="300" cy="300" rx="80" ry="48"/>
+          <ellipse cx="720" cy="300" rx="250" ry="180"/><ellipse cx="720" cy="300" rx="150" ry="100"/><ellipse cx="720" cy="300" rx="60" ry="40"/>
+        </g>
+        <path class="atlas__road" id="atlas-road" d="M110 400 C 214.5 400 195.5 190 300 190 S 390 410 500 410 S 590 190 700 190 S 785 390 890 390"/>
+        <path class="atlas__done" id="atlas-done" d="M110 400 C 214.5 400 195.5 190 300 190 S 390 410 500 410 S 590 190 700 190 S 785 390 890 390"/>
+        <path class="atlas__lane" d="M110 400 C 214.5 400 195.5 190 300 190 S 390 410 500 410 S 590 190 700 190 S 785 390 890 390"/>
+        <g class="atlas__city" transform="translate(110 400)"><circle r="14"/><text y="48"><tspan class="atlas__num">01 </tspan><tspan data-i18n="nav.home">início</tspan></text></g>
+        <g class="atlas__city" transform="translate(300 190)"><circle r="14"/><text y="-30"><tspan class="atlas__num">02 </tspan><tspan data-i18n="nav.about">sobre</tspan></text></g>
+        <g class="atlas__city" transform="translate(500 410)"><circle r="14"/><text y="48"><tspan class="atlas__num">03 </tspan><tspan data-i18n="nav.stack">stack</tspan></text></g>
+        <g class="atlas__city" transform="translate(700 190)"><circle r="14"/><text y="-30"><tspan class="atlas__num">04 </tspan><tspan data-i18n="nav.projects">projetos</tspan></text></g>
+        <g class="atlas__city" transform="translate(890 390)"><circle r="14"/><text y="48"><tspan class="atlas__num">05 </tspan><tspan data-i18n="nav.contact">contato</tspan></text></g>
+        <g class="atlas__car" id="atlas-car"><use href="#car-top" x="-13" y="-21" width="26" height="42"/></g>
+      </g>
+    </svg>
+    <p class="atlas__caption"><span data-i18n="map.next">próxima parada</span> · <b id="atlas-dest">sobre</b></p>
   </div>
 
+  <!-- desenho do Chevettinho visto de cima (reaproveitado no minimapa e no mapa grande) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="car-top" viewBox="0 0 26 42">
+      <rect x="0" y="7" width="4" height="8" rx="1.5" fill="#0b0c0e"/><rect x="22" y="7" width="4" height="8" rx="1.5" fill="#0b0c0e"/>
+      <rect x="0" y="28" width="4" height="8" rx="1.5" fill="#0b0c0e"/><rect x="22" y="28" width="4" height="8" rx="1.5" fill="#0b0c0e"/>
+      <rect x="2.5" y="1" width="21" height="40" rx="8" fill="#5a73f0" stroke="#0b0c0e" stroke-width="1.2"/>
+      <path d="M6 13 Q13 9.5 20 13 L19 18.5 Q13 16.5 7 18.5 Z" fill="#121317"/>
+      <rect x="7" y="19" width="12" height="11" rx="3" fill="#8fa2ff"/>
+      <path d="M7 31 Q13 33 19 31 L19.5 35.5 Q13 37.5 6.5 35.5 Z" fill="#121317"/>
+      <circle cx="8" cy="4.6" r="2.4" fill="#f3f3f0"/><circle cx="18" cy="4.6" r="2.4" fill="#f3f3f0"/>
+      <circle cx="8" cy="4" r="1.1" fill="#0b0c0e"/><circle cx="18" cy="4" r="1.1" fill="#0b0c0e"/>
+      <line x1="19" y1="33" x2="23" y2="39" stroke="#0b0c0e" stroke-width="1"/><circle cx="23" cy="39" r="1.4" fill="#e07a5f"/>
+    </symbol>
+  </svg>
   <!-- ============ MINIMAPA: a navegação é uma estrada ============ -->
   <aside class="map" aria-label="Navegação">
     <a href="#top" class="map__brand" aria-label="Lorenzo Jorge, início">
@@ -79,7 +106,11 @@
     </a>
 
     <nav class="map__route" id="route" aria-label="Seções">
-      <div class="map__road" aria-hidden="true"></div>
+      <svg class="map__svg" id="road-svg" aria-hidden="true">
+        <path class="map__asphalt" id="road-path"/>
+        <path class="map__done" id="road-done"/>
+        <path class="map__lane" id="road-lane"/>
+      </svg>
       <ol class="map__stops">
         <li><a class="map__stop" href="#top"><span class="map__dot" aria-hidden="true"></span><span class="map__num">01</span><span class="map__label" data-i18n="nav.home">início</span></a></li>
         <li><a class="map__stop" href="#sobre"><span class="map__dot" aria-hidden="true"></span><span class="map__num">02</span><span class="map__label" data-i18n="nav.about">sobre</span></a></li>
@@ -88,52 +119,13 @@
         <li><a class="map__stop" href="#contato"><span class="map__dot" aria-hidden="true"></span><span class="map__num">05</span><span class="map__label" data-i18n="nav.contact">contato</span></a></li>
       </ol>
 
-      <!-- Chevettinho: anda pela estrada conforme o visitante avança -->
+      <!-- Chevettinho visto de cima: anda pela estrada e vira nas curvas -->
+      <span class="car__shout" id="car-shout" aria-hidden="true">vrum!</span>
       <div class="map__car" id="map-car">
-        <span class="car__shout" id="car-shout" aria-hidden="true">vrum!</span>
         <button class="car-btn" id="buddy-car" type="button" aria-label="Chevettinho, o guia do site. Clique para conversar" data-i18n-aria="aria.car">
-          <svg viewBox="0 0 120 112" aria-hidden="true">
-            <defs>
-              <linearGradient id="carBody" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stop-color="#4f69e0" />
-                <stop offset="1" stop-color="#2a46c9" />
-              </linearGradient>
-              <linearGradient id="carRoof" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stop-color="#7d92ee" />
-                <stop offset="1" stop-color="#4f69e0" />
-              </linearGradient>
-            </defs>
-            <ellipse class="car__shadow" cx="60" cy="106" rx="42" ry="5" />
-            <g class="car__body">
-              <line x1="84" y1="22" x2="94" y2="5" stroke="#14161b" stroke-width="2.6" stroke-linecap="round" />
-              <circle cx="94" cy="5" r="3.6" fill="#b8492f" />
-              <rect x="18" y="84" width="18" height="20" rx="6" fill="#14161b" />
-              <rect x="84" y="84" width="18" height="20" rx="6" fill="#14161b" />
-              <path d="M30 52 L40 24 Q42 19 48 19 L72 19 Q78 19 80 24 L90 52 Z" fill="url(#carRoof)" />
-              <path d="M37 49 L45 27 Q46 25 49 25 L71 25 Q74 25 75 27 L83 49 Z" fill="#14161b" />
-              <path d="M50 28 L44 45" stroke="#e9eaee" stroke-opacity=".35" stroke-width="3" stroke-linecap="round" />
-              <rect x="8" y="48" width="104" height="44" rx="16" fill="url(#carBody)" />
-              <rect x="8" y="48" width="104" height="10" rx="5" fill="#fff" fill-opacity=".14" />
-              <g class="car__eye">
-                <circle cx="32" cy="68" r="12" fill="#f3f3f0" stroke="#14161b" stroke-width="2" />
-                <circle class="car__pupil" cx="32" cy="68" r="5.2" fill="#14161b" />
-                <circle class="car__pupil-shine" cx="34" cy="65.5" r="1.6" fill="#fff" />
-                <rect class="car__lid" x="19" y="55" width="26" height="26" fill="url(#carBody)" />
-              </g>
-              <g class="car__eye">
-                <circle cx="88" cy="68" r="12" fill="#f3f3f0" stroke="#14161b" stroke-width="2" />
-                <circle class="car__pupil" cx="88" cy="68" r="5.2" fill="#14161b" />
-                <circle class="car__pupil-shine" cx="90" cy="65.5" r="1.6" fill="#fff" />
-                <rect class="car__lid" x="75" y="55" width="26" height="26" fill="url(#carBody)" />
-              </g>
-              <path d="M50 74 Q60 83 70 74" fill="none" stroke="#14161b" stroke-width="3" stroke-linecap="round" />
-              <rect x="12" y="88" width="96" height="7" rx="3.5" fill="#14161b" />
-              <rect x="54" y="89.5" width="12" height="4" rx="1" fill="#e9eaee" fill-opacity=".7" />
-            </g>
-          </svg>
+          <svg viewBox="0 0 26 42" aria-hidden="true"><use href="#car-top"/></svg>
         </button>
-      </div>
-    </nav>
+      </div>    </nav>
 
     <div class="map__foot">
       <p class="map__odo" aria-hidden="true"><span data-i18n="map.odo">odômetro</span><b id="odo">000 km</b></p>
@@ -457,7 +449,17 @@
   <!-- ============ CHEVETTINHO: balão do guia ============ -->
   <div class="buddy__bubble" id="buddy-bubble" role="dialog" aria-live="polite" aria-labelledby="buddy-name" hidden>
     <div class="buddy__head">
-      <p id="buddy-name"><span class="dot"></span> Chevettinho <span class="buddy__step" id="buddy-step"></span></p>
+      <p id="buddy-name">
+        <svg class="buddy__avatar" viewBox="0 0 120 100" aria-hidden="true">
+          <path d="M30 52 L40 24 Q42 19 48 19 L72 19 Q78 19 80 24 L90 52 Z" fill="#8fa2ff" />
+          <path d="M37 49 L45 27 Q46 25 49 25 L71 25 Q74 25 75 27 L83 49 Z" fill="#121317" />
+          <rect x="8" y="48" width="104" height="44" rx="16" fill="#5a73f0" />
+          <g class="car__eye"><circle cx="32" cy="68" r="12" fill="#f3f3f0" /><circle cx="32" cy="68" r="5.2" fill="#0b0c0e" /><rect class="car__lid" x="19" y="55" width="26" height="26" fill="#5a73f0" /></g>
+          <g class="car__eye"><circle cx="88" cy="68" r="12" fill="#f3f3f0" /><circle cx="88" cy="68" r="5.2" fill="#0b0c0e" /><rect class="car__lid" x="75" y="55" width="26" height="26" fill="#5a73f0" /></g>
+          <path d="M50 74 Q60 83 70 74" fill="none" stroke="#0b0c0e" stroke-width="3" stroke-linecap="round" />
+        </svg>
+        Chevettinho <span class="buddy__step" id="buddy-step"></span>
+      </p>
       <button class="buddy__close" id="buddy-close" type="button" aria-label="Fechar" data-i18n-aria="aria.close">×</button>
     </div>
     <p class="buddy__text" id="buddy-text"></p>
