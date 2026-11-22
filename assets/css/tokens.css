@@ -1,40 +1,45 @@
 /* =========================================================
-   Tokens de design · "Concreto e cobalto"
-   Uma paleta só: cinza mineral, grafite e azul-cobalto,
-   com ferrugem reservada para erros e destaques pontuais.
+   Tokens de design · "Concreto escuro"
+   Uma paleta só: cinza-chumbo, asfalto quase preto e
+   cobalto claro. Ferrugem reservada para erros.
    ========================================================= */
 
 :root {
   /* superfícies */
-  --bg: #e4e3df;
-  --surface: #efeeea;
-  --surface-2: #d9d7d1;
-  --border: #cbc8c0;
-  --border-strong: #aeaaa0;
+  --bg: #2b2e34;
+  --surface: #33363d;
+  --surface-2: #3a3e46;
+  --sidebar: #212328;
+  --border: #41454e;
+  --border-strong: #565b66;
+
+  /* estrada */
+  --asphalt: #121317;
+  --lane: #d9dce2;
 
   /* texto */
-  --text: #14161b;
-  --muted: #535864;
-  --dim: #73777f;
+  --text: #eceef1;
+  --muted: #a3a8b2;
+  --dim: #7f848e;
 
   /* cor de marca */
-  --accent: #2a46c9;
-  --accent-strong: #1f37a8;
-  --accent-soft: #d6dbf3;
-  --accent-ink: #ffffff;
-  --rust: #b8492f;
+  --accent: #7088ff;
+  --accent-strong: #8fa2ff;
+  --accent-soft: rgba(112, 136, 255, .16);
+  --accent-ink: #0f1013;
+  --rust: #e07a5f;
 
-  /* sintaxe (sobrescrita nas ilhas escuras de código) */
-  --teal: #1f8a72;
-  --green: #1f7a56;
-  --blue: #2a46c9;
-  --pink: #a3407a;
-  --yellow: #8a6410;
-  --orange: #b8492f;
-  --red: #b8492f;
+  /* sintaxe */
+  --teal: #5ec8ad;
+  --green: #9be2c0;
+  --blue: #8fb4ff;
+  --pink: #e0a2c9;
+  --yellow: #e5c07b;
+  --orange: #f0a17e;
+  --red: #ff8a7a;
 
   /* largura da estrada lateral (minimapa) */
-  --map-w: 176px;
+  --map-w: 184px;
 
   /* tipografia */
   --font-display: "Fraunces", Georgia, "Times New Roman", serif;
@@ -43,31 +48,21 @@
 
   /* curvas */
   --ease: cubic-bezier(.2, .8, .2, 1);
-  --ease-road: cubic-bezier(.65, 0, .35, 1);
+  --ease-camera: cubic-bezier(.65, 0, .3, 1);
   --spring: cubic-bezier(.3, 1.4, .5, 1);
 
-  --shadow: 0 1px 2px rgba(20, 22, 27, .05), 0 14px 34px -20px rgba(20, 22, 27, .28);
-  color-scheme: light;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .25), 0 18px 40px -22px rgba(0, 0, 0, .7);
+  color-scheme: dark;
 }
 
-/* ilhas escuras: terminal e trechos de código ficam em grafite */
+/* ilhas escuras: terminal e trechos de código ficam um degrau abaixo do fundo */
 .term,
 .project__visual {
-  --bg: #16181d;
-  --surface: #1d2027;
-  --surface-2: #252932;
-  --border: #2d313b;
-  --border-strong: #3b404c;
-  --text: #e9eaee;
-  --muted: #a2a7b3;
-  --dim: #6c7180;
-  --accent: #8fa2ff;
-  --teal: #5ec8ad;
-  --green: #9be2c0;
-  --blue: #8fb4ff;
-  --pink: #e0a2c9;
-  --yellow: #e5c07b;
-  --orange: #f0a17e;
-  --red: #ff8a7a;
+  --bg: #1a1c20;
+  --surface: #202227;
+  --surface-2: #272a30;
+  --border: #33363d;
+  --border-strong: #41454e;
+  --dim: #6f7480;
   color: var(--text);
 }

@@ -15,7 +15,7 @@
   position: relative; overflow: hidden;
   transition: border-color .3s, transform .4s var(--ease);
 }
-.project:hover { border-color: var(--text); }
+.project:hover { border-color: var(--accent); }
 .project__info { position: relative; display: flex; flex-direction: column; gap: .8rem; }
 .project__meta { font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
 .project h3 { font-family: var(--font-mono); font-size: clamp(1.3rem, 2.6vw, 1.7rem); letter-spacing: -.02em; }

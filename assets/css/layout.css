@@ -52,7 +52,7 @@ html[lang="en"] [data-lang="en"] { color: var(--accent); font-weight: 700; }
 }
 .section__head::after {
   content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
-  background: var(--text);
+  background: var(--border-strong);
   transform-origin: left; transform: scaleX(1);
 }
 .js .section__head::after { transform: scaleX(0); transition: transform 1.2s var(--ease) .15s; }
