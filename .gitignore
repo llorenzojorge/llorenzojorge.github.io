@@ -12,3 +12,6 @@ desktop.ini
 .claude/
 node_modules/
 *.log
+
+# capturas do teste de fumaça (scripts/smoke-test.mjs)
+.smoke/
