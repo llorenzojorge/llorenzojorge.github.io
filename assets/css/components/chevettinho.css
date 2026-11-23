@@ -45,12 +45,12 @@
   position: fixed; z-index: 60;
   left: calc(var(--map-w) + 14px);
   top: clamp(1rem, var(--bubble-y, 40vh), calc(100vh - 17rem));
-  width: min(340px, calc(100vw - var(--map-w) - 2rem));
+  width: min(300px, calc(100vw - var(--map-w) - 2rem));
   background: var(--surface);
   border: 1px solid var(--border-strong);
   border-radius: 14px;
   box-shadow: var(--shadow);
-  padding: .9rem 1rem 1rem;
+  padding: .75rem .85rem .85rem;
   transform-origin: left center;
   animation: pop .4s var(--spring);
 }
@@ -70,14 +70,18 @@
 .buddy__close { width: 26px; height: 26px; border-radius: 8px; border: 0; background: transparent; color: var(--dim); font-size: 1.1rem; line-height: 1; }
 .buddy__close:hover { background: var(--surface-2); color: var(--text); }
 
-.buddy__text { margin-top: .5rem; font-size: .95rem; line-height: 1.6; min-height: 3.2em; }
+.buddy__text { margin-top: .4rem; font-size: .9rem; line-height: 1.55; }
+.buddy__bubble.is-tour .buddy__text { min-height: 3.1em; } /* o texto do tour é digitado: reserva o espaço */
 .buddy__progress { display: flex; gap: 4px; margin-top: .8rem; }
 .buddy__progress[hidden] { display: none; }
 .buddy__progress span { flex: 1; height: 3px; border-radius: 2px; background: var(--border); transition: background .4s; }
 .buddy__progress span.is-on { background: var(--accent); }
 
 .buddy__actions { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .85rem; justify-content: flex-end; }
-.buddy__actions--chips { justify-content: flex-start; }
+/* perguntas prontas: grade de 2 colunas, para o balão cobrir menos o início do site */
+.buddy__actions--chips { display: grid; grid-template-columns: 1fr 1fr; gap: .35rem; margin-top: .7rem; }
+.buddy__actions--chips .buddy__btn { font-size: .7rem; padding: .4rem .55rem; text-align: left; }
+.buddy__actions--chips .buddy__btn:last-child:nth-child(odd) { grid-column: 1 / -1; }
 .buddy__btn {
   font-size: .74rem; padding: .42rem .75rem; border-radius: 8px;
   border: 1px solid var(--border); background: var(--bg); color: var(--muted);

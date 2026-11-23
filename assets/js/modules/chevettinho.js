@@ -104,6 +104,7 @@ export function initChevettinho(roadmap) {
 
   function renderTour() {
     state.mode = "tour";
+    el.bubble.classList.add("is-tour");
     const steps = t("buddy.steps");
     const last = state.step === steps.length - 1;
 
@@ -138,6 +139,7 @@ export function initChevettinho(roadmap) {
 
   function renderChat(answerIndex = null, greeting = "buddy.hello") {
     state.mode = "chat";
+    el.bubble.classList.remove("is-tour");
     state.lastAnswer = answerIndex;
     state.greeting = greeting;
     el.step.textContent = "";

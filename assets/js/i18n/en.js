@@ -109,10 +109,10 @@ export default {
   "buddy.hello": "Beep beep! Where to?",
   "buddy.back": "Beep beep! Good to see you again. Want to jump somewhere or take the tour with me again?",
   "buddy.q": [
-    ["Who's Lorenzo?", "A back-end focused full-stack dev from Curitiba. He started in IT support, now builds REST APIs with TypeScript and Node.js, and he's open to opportunities.", "#sobre"],
-    ["What's his stack?", "TypeScript and C# as languages, Node/NestJS and .NET on the back, React/Next on the front, PostgreSQL and SQL Server for data, Docker and GitHub Actions to ship.", "#stack"],
-    ["Show me projects", "Start with estoque-lotes-api: an expired batch never leaves the stock, not through the API and not through the database.", "#projetos"],
-    ["How do I reach him?", "Email or LinkedIn, both right here.", "#contato"],
+    ["Who is he?", "A back-end focused full-stack dev from Curitiba. He started in IT support, now builds REST APIs with TypeScript and Node.js, and he's open to opportunities.", "#sobre"],
+    ["His stack?", "TypeScript and C# as languages, Node/NestJS and .NET on the back, React/Next on the front, PostgreSQL and SQL Server for data, Docker and GitHub Actions to ship.", "#stack"],
+    ["See projects", "Start with estoque-lotes-api: an expired batch never leaves the stock, not through the API and not through the database.", "#projetos"],
+    ["Get in touch", "Email or LinkedIn, both right here.", "#contato"],
     ["Restart the tour", null, "tour"],
   ],
 };

@@ -110,10 +110,10 @@ export default {
   "buddy.hello": "Bi-bi! Pra onde vamos?",
   "buddy.back": "Bi-bi! Que bom te ver de novo. Quer ir direto a algum lugar ou refazer a volta comigo?",
   "buddy.q": [
-    ["Quem é o Lorenzo?", "Dev full-stack com foco em back-end, de Curitiba. Começou no suporte de TI, hoje constrói APIs REST com TypeScript e Node.js e está aberto a oportunidades.", "#sobre"],
-    ["Que stack ele usa?", "TypeScript e C# como linguagens, Node/NestJS e .NET no back, React/Next no front, PostgreSQL e SQL Server nos dados, Docker e GitHub Actions para entregar.", "#stack"],
-    ["Mostra os projetos", "Começa pelo estoque-lotes-api: lote vencido não sai do estoque de jeito nenhum, nem pela API nem pelo banco.", "#projetos"],
-    ["Como falo com ele?", "Por e-mail ou LinkedIn, os dois estão aqui.", "#contato"],
+    ["Quem é ele?", "Dev full-stack com foco em back-end, de Curitiba. Começou no suporte de TI, hoje constrói APIs REST com TypeScript e Node.js e está aberto a oportunidades.", "#sobre"],
+    ["Qual a stack?", "TypeScript e C# como linguagens, Node/NestJS e .NET no back, React/Next no front, PostgreSQL e SQL Server nos dados, Docker e GitHub Actions para entregar.", "#stack"],
+    ["Ver projetos", "Começa pelo estoque-lotes-api: lote vencido não sai do estoque de jeito nenhum, nem pela API nem pelo banco.", "#projetos"],
+    ["Como falar?", "Por e-mail ou LinkedIn, os dois estão aqui.", "#contato"],
     ["Refazer a volta", null, "tour"],
   ],
 };
