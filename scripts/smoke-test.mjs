@@ -83,6 +83,18 @@ try {
   const arrived = await state();
   check("chegou em projetos", arrived.active === "#projetos");
 
+  // viagem longa (3 trechos): entra no turbo, e um clique no mapa pula direto para a chegada
+  await ev(`document.querySelector('.map__stop[href="#top"]').click()`);
+  await sleep(1000);
+  check("viagem longa entra no turbo", await ev(`document.getElementById('atlas').classList.contains('is-turbo')`));
+  const [cx, cy] = [Math.round(viewport[0] / 2) + 60, Math.round(viewport[1] / 2)];
+  const skipAt = Date.now();
+  await send("Input.dispatchMouseEvent", { type: "mousePressed", x: cx, y: cy, button: "left", clickCount: 1 });
+  await send("Input.dispatchMouseEvent", { type: "mouseReleased", x: cx, y: cy, button: "left", clickCount: 1 });
+  while (Date.now() - skipAt < 5000 && (await state()).active !== "#top") await sleep(100);
+  report.skipMs = Date.now() - skipAt;
+  check("clique pula para a chegada", (await state()).active === "#top" && report.skipMs < 2200);
+
   await ev(`window.scrollTo(0, document.querySelector('#stack').offsetTop - 200)`);
   await sleep(400);
   check("carro acompanha a rolagem", (await state()).active === "#stack");

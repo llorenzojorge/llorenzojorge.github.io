@@ -23,7 +23,8 @@ um mascote que dirige pelo site e apresenta cada seção.
   O **Chevettinho**, visto de cima, anda pela curva acompanhando a leitura, e o odômetro marca o caminho percorrido.
 - **Transição de viagem em 3D.** Ao clicar numa parada, a página dá lugar a um diorama noturno do site
   (three.js): a câmera sobe, os postes acendem em sequência, o carro dirige pelos morros até o destino,
-  a cidade de chegada se ilumina e a câmera mergulha na seção nova. Sem WebGL, a viagem acontece num mapa em SVG.
+  a cidade de chegada se ilumina e a câmera mergulha na seção nova. Viagens longas entram no modo turbo
+  (×1 → ×10, com rastro de luz), e um clique pula direto para a chegada. Sem WebGL, a viagem acontece num mapa em SVG.
 - **Um guia, sem IA.** O Chevettinho faz um tour roteirizado e depois responde a perguntas prontas.
   Tudo no cliente, sem backend e sem custo.
 - **Calmo para ler.** Nada segue o cursor e nada fica animando em loop: o fundo é uma textura de concreto com

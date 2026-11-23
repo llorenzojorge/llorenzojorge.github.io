@@ -89,6 +89,11 @@ o Chevettinho; o guia só escuta a estrada e pede viagens a ela (`roadmap.travel
 - `assets/vendor/three.min.js` é um **recorte** com só as classes usadas. Usou uma classe nova do three.js?
   Acrescente-a em `scripts/vendor/three-entry.mjs` e gere o arquivo de novo com o comando descrito lá.
 - No celular (tela em pé) a câmera gira para a estrada correr na vertical.
+- **Turbo (escolhido: "V1")**: a duração depende da distância, mas cresce pouco (1 trecho ≈ 0,65 s de estrada,
+  4 trechos ≈ 1,2 s), e a subida da câmera se sobrepõe à arrancada. Com 3 trechos ou mais (`TURBO_LEGS`), o mostrador
+  `.atlas__speed` conta ×1 → ×10 a partir da velocidade real (×1 = um trecho em 1,3 s), o carro deixa um rastro
+  cobalto, os postes se esticam em riscos e a câmera chega mais perto. Um clique, toque ou Esc durante a viagem
+  pula direto para a chegada (o mergulho no destino sempre acontece inteiro).
 
 ### Para adicionar ou remover uma seção (parada)
 
