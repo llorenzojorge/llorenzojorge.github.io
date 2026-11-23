@@ -12,7 +12,8 @@ um mascote que dirige pelo site e apresenta cada seção.
 ![HTML5](https://img.shields.io/badge/HTML5-16131f?style=flat-square&logo=html5&logoColor=e9e4ff)
 ![CSS3](https://img.shields.io/badge/CSS3-16131f?style=flat-square&logo=css&logoColor=e9e4ff)
 ![JavaScript](https://img.shields.io/badge/JavaScript_(ES_Modules)-16131f?style=flat-square&logo=javascript&logoColor=e9e4ff)
-![Sem dependências](https://img.shields.io/badge/dependências-0-b18cff?style=flat-square)
+![Three.js](https://img.shields.io/badge/Three.js-16131f?style=flat-square&logo=threedotjs&logoColor=e9e4ff)
+![Sem build](https://img.shields.io/badge/build-nenhum-7088ff?style=flat-square)
 
 </div>
 
@@ -20,8 +21,9 @@ um mascote que dirige pelo site e apresenta cada seção.
 
 - **A navegação é uma estrada.** No lugar de uma navbar, um minimapa lateral em serpentina com uma parada por seção.
   O **Chevettinho**, visto de cima, anda pela curva acompanhando a leitura, e o odômetro marca o caminho percorrido.
-- **Transição de viagem.** Ao clicar numa parada, a câmera sobe: a página vira um mapa do site inteiro,
-  o carro dirige até o destino e a câmera mergulha na seção nova.
+- **Transição de viagem em 3D.** Ao clicar numa parada, a página dá lugar a um diorama noturno do site
+  (three.js): a câmera sobe, os postes acendem em sequência, o carro dirige pelos morros até o destino,
+  a cidade de chegada se ilumina e a câmera mergulha na seção nova. Sem WebGL, a viagem acontece num mapa em SVG.
 - **Um guia, sem IA.** O Chevettinho faz um tour roteirizado e depois responde a perguntas prontas.
   Tudo no cliente, sem backend e sem custo.
 - **Calmo para ler.** Nada segue o cursor e nada fica animando em loop: o fundo é uma textura de concreto com
@@ -36,6 +38,10 @@ um mascote que dirige pelo site e apresenta cada seção.
 O site é estático e tem uma página só. HTML, CSS e JavaScript nativos resolvem isso sem build,
 sem dependências para manter e com carregamento rápido. A organização vem da estrutura de pastas e dos
 módulos, não de uma ferramenta.
+
+A única biblioteca é o **three.js**, usado só no diorama da viagem. Ele fica copiado no repositório
+(`assets/vendor/three.min.js`), recortado para as classes usadas, e é carregado em segundo plano depois
+da abertura, então não atrasa a primeira tela.
 
 ## Estrutura
 
@@ -54,9 +60,11 @@ módulos, não de uma ferramenta.
     │   ├── main.js             ponto de entrada: inicializa os módulos e orquestra a abertura
     │   ├── core/               configuração, paradas, utilitários e posições de rolagem
     │   ├── i18n/               dicionários PT/EN e a troca de idioma
-    │   └── modules/            um módulo por funcionalidade (estrada, Chevettinho, projetos…)
+    │   └── modules/            um módulo por funcionalidade (estrada, diorama 3D, Chevettinho, projetos…)
+    ├── vendor/             three.js recortado e minificado (com a licença MIT)
     └── img/                favicon e curvas de nível do fundo (SVG gerado)
 scripts/smoke-test.mjs          teste no Chrome headless (abertura, estrada, viagem, guia)
+scripts/vendor/three-entry.mjs  lista das classes do three.js usadas e como gerar o recorte
 CLAUDE.md                       contexto e decisões do projeto para assistentes de IA
 ```
 
