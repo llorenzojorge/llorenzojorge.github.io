@@ -24,7 +24,8 @@ mkdirSync(outDir, { recursive: true });
 const port = 9400 + Math.floor(Math.random() * 400);
 const proc = spawn(chrome, [
   "--headless=new", `--remote-debugging-port=${port}`, `--user-data-dir=${join(tmpdir(), `smoke-${port}`)}`,
-  `--window-size=${viewport[0]},${viewport[1]}`, "--no-first-run", "--hide-scrollbars", "about:blank",
+  `--window-size=${viewport[0]},${viewport[1]}`, "--no-first-run", "--hide-scrollbars", "--enable-unsafe-swiftshader", // WebGL por software, para o atlas 3D
+  "about:blank",
 ], { stdio: "ignore" });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -70,6 +71,7 @@ try {
   const start = await state();
   check("abertura terminou", await ev(`document.documentElement.classList.contains('is-loaded')`));
   check("tour abre na primeira visita", start.bubble);
+  check("diorama 3D carregou", await ev(`document.getElementById('atlas').classList.contains('atlas--3d')`));
 
   await ev(`document.getElementById('buddy-close').click()`);
   await ev(`document.querySelector('.map__stop[href="#projetos"]').click()`);
