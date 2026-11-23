@@ -103,7 +103,7 @@ export default {
   "buddy.steps": [
     "Oi! Eu sou o Chevettinho, o copiloto deste site. Posso te levar numa volta rápida pelo trabalho do Lorenzo?",
     "Primeira parada: quem é o Lorenzo. Dev full-stack com foco em back-end, que prioriza arquitetura sólida e código pronto para crescer.",
-    "Aqui fica o motor: TypeScript e C# no dia a dia, com PostgreSQL e SQL Server no porta-malas. Os destacados são os de uso diário.",
+    "Aqui fica o motor: TypeScript e Node.js no dia a dia, PostgreSQL nos dados, React no front e Docker com CI/CD para entregar. Os destacados são os de uso diário.",
     "Agora os projetos. Cada um mostra uma requisição de verdade e o que a API responde. Dá pra repetir no botão replay.",
     "Fim da volta! Se fizer sentido para o seu time, o contato está logo aqui. Eu fico aqui na estrada se precisar de mim.",
   ],
@@ -111,7 +111,7 @@ export default {
   "buddy.back": "Bi-bi! Que bom te ver de novo. Quer ir direto a algum lugar ou refazer a volta comigo?",
   "buddy.q": [
     ["Quem é ele?", "Dev full-stack com foco em back-end, de Curitiba. Começou no suporte de TI, hoje constrói APIs REST com TypeScript e Node.js e está aberto a oportunidades.", "#sobre"],
-    ["Qual a stack?", "TypeScript e C# como linguagens, Node/NestJS e .NET no back, React/Next no front, PostgreSQL e SQL Server nos dados, Docker e GitHub Actions para entregar.", "#stack"],
+    ["Qual a stack?", "TypeScript e Node.js para APIs REST, PostgreSQL nos dados, React no front, Docker e CI/CD com GitHub Actions para entregar. Também trabalha com C# e .NET.", "#stack"],
     ["Ver projetos", "Começa pelo estoque-lotes-api: lote vencido não sai do estoque de jeito nenhum, nem pela API nem pelo banco.", "#projetos"],
     ["Como falar?", "Por e-mail ou LinkedIn, os dois estão aqui.", "#contato"],
     ["Refazer a volta", null, "tour"],

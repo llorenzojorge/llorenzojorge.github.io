@@ -102,7 +102,7 @@ export default {
   "buddy.steps": [
     "Hi! I'm Chevettinho, this site's co-pilot. Can I take you on a quick ride through Lorenzo's work?",
     "First stop: who Lorenzo is. A back-end focused full-stack dev who prioritizes solid architecture and code that's ready to grow.",
-    "Here's the engine: TypeScript and C# every day, with PostgreSQL and SQL Server in the trunk. The highlighted ones are daily drivers.",
+    "Here's the engine: TypeScript and Node.js every day, PostgreSQL for data, React on the front and Docker with CI/CD to ship. The highlighted ones are daily drivers.",
     "Now the projects. Each one shows a real request and what the API answers. Hit replay to run it again.",
     "End of the ride! If this fits your team, the contact is right here. I'll stay right here on the road if you need me.",
   ],
@@ -110,7 +110,7 @@ export default {
   "buddy.back": "Beep beep! Good to see you again. Want to jump somewhere or take the tour with me again?",
   "buddy.q": [
     ["Who is he?", "A back-end focused full-stack dev from Curitiba. He started in IT support, now builds REST APIs with TypeScript and Node.js, and he's open to opportunities.", "#sobre"],
-    ["His stack?", "TypeScript and C# as languages, Node/NestJS and .NET on the back, React/Next on the front, PostgreSQL and SQL Server for data, Docker and GitHub Actions to ship.", "#stack"],
+    ["His stack?", "TypeScript and Node.js for REST APIs, PostgreSQL for data, React on the front, Docker and CI/CD with GitHub Actions to ship. He also works with C# and .NET.", "#stack"],
     ["See projects", "Start with estoque-lotes-api: an expired batch never leaves the stock, not through the API and not through the database.", "#projetos"],
     ["Get in touch", "Email or LinkedIn, both right here.", "#contato"],
     ["Restart the tour", null, "tour"],
