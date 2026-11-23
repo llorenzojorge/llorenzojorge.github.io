@@ -1,11 +1,10 @@
 /**
  * Ponto de entrada. Inicializa cada módulo e coordena a abertura:
- * tela de boot → título e terminal animando → Chevettinho chegando na estrada.
+ * tela de boot → título e ficha de resumo animando → Chevettinho chegando na estrada.
  */
 import { root, sleep } from "./core/utils.js";
 import { applyTranslations, initLanguageToggle } from "./i18n/index.js";
 import { initReveal, playSplit } from "./modules/reveal.js";
-import { playTerminal } from "./modules/hero.js";
 import { initProjects } from "./modules/projects.js";
 import { initContact } from "./modules/contact.js";
 import { initRoadmap } from "./modules/roadmap.js";
@@ -25,7 +24,6 @@ const startChevettinho = initChevettinho(roadmap);
   await playBoot();
   root.classList.add("is-loaded");
   playSplit(document.querySelector(".hero__title"), 150);
-  playTerminal();
   await sleep(900);
   startChevettinho();
 })();

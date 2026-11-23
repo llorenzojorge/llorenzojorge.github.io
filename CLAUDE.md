@@ -42,7 +42,7 @@ assets/js/
   modules/chevettinho.js       o guia: tour roteirizado e perguntas prontas
   modules/reveal.js            animações ao rolar
   modules/projects.js          simulação requisição → resposta nos cards
-  modules/hero.js · boot.js · contact.js
+  modules/boot.js · contact.js
 assets/img/                    favicon.svg e topography.svg (gerado por script, curvas de nível)
 assets/vendor/                 three.min.js (recorte minificado do three.js) e a licença
 scripts/smoke-test.mjs         teste no Chrome headless (ver "Como testar")
@@ -58,7 +58,9 @@ o Chevettinho; o guia só escuta a estrada e pede viagens a ela (`roadmap.travel
   asfalto `#121317`, texto `#eceef1`, cobalto claro `#7088ff` como cor de marca, ferrugem `#e07a5f` só em erros.
   **Uma paleta só, sem tema claro/escuro.** Ele achou parecida com o Discord e gostou.
 - Fontes: **Fraunces** (títulos, itálico só em palavras de destaque), **Inter** (texto), **JetBrains Mono** (rótulos técnicos).
-- Terminal e trechos de código são "ilhas" um degrau mais escuras (`.term`, `.project__visual` em `tokens.css`).
+- A ficha de resumo do início e os trechos de código são "ilhas" um degrau mais escuras (`.summary`, `.project__visual`
+  em `tokens.css`). A ficha usa linguagem comum (um amigo não técnico não entendeu o antigo terminal Linux);
+  a stack nela segue a prioridade do Lorenzo: TypeScript, Node.js, PostgreSQL, Docker.
 - Visual com **personalidade, não genérico**. Ele rejeitou: navbar padrão no topo, partículas, grade de fundo,
   brilhos que seguem o mouse, roxo genérico, frases de rodapé amadoras (ex.: "feito sem frameworks").
 

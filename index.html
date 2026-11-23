@@ -172,22 +172,25 @@
         </div>
       </div>
 
-      <aside class="term intro" style="--d: 4" aria-label="Resumo">
-        <div class="term__bar">
-          <span></span><span></span><span></span>
-          <p>dev/lorenzo-jorge</p>
-        </div>
-        <div class="term__body" id="term-body">
-          <p class="term__cmd"><span class="c-teal">❯</span> <span data-type>whoami</span></p>
-          <p class="term__out c-text">lorenzo-jorge</p>
-          <p class="term__cmd"><span class="c-teal">❯</span> <span data-type>cat stack</span></p>
-          <p class="term__out"><span class="c-yellow">typescript</span> · <span class="c-blue">c#</span> · <span class="c-pink">sql</span></p>
-          <p class="term__cmd"><span class="c-teal">❯</span> <span data-type>cat status</span></p>
-          <p class="term__out c-text"><span class="dot dot--live"></span> <span data-i18n="term.status">aberto a oportunidades</span></p>
-          <p class="term__cmd"><span class="c-teal">❯</span> <span data-type>locale</span></p>
-          <p class="term__out c-text">curitiba, pr · utc-3</p>
-          <p class="term__cmd term__cmd--idle"><span class="c-teal">❯</span> <span class="term__caret"></span></p>
-        </div>
+      <aside class="summary intro" style="--d: 4" data-i18n-aria="summary.aria" aria-label="Resumo">
+        <header class="summary__head">
+          <span class="summary__key" data-i18n="summary.title">Em resumo</span>
+          <span class="summary__status"><span class="dot dot--live"></span> <span data-i18n="summary.status">Aberto a oportunidades</span></span>
+        </header>
+        <dl class="summary__list">
+          <div class="summary__row intro" style="--d: 6">
+            <dt class="summary__key" data-i18n="summary.who">Quem</dt>
+            <dd>Lorenzo Jorge<small data-i18n="summary.role">Dev full-stack com foco em back-end</small></dd>
+          </div>
+          <div class="summary__row intro" style="--d: 7">
+            <dt class="summary__key" data-i18n="summary.stack">Stack</dt>
+            <dd><ul class="summary__chips"><li>TypeScript</li><li>Node.js</li><li>PostgreSQL</li><li>Docker</li></ul></dd>
+          </div>
+          <div class="summary__row intro" style="--d: 8">
+            <dt class="summary__key" data-i18n="summary.where">Onde</dt>
+            <dd>Curitiba, PR<small data-i18n="summary.tz">Horário de Brasília (UTC−3)</small></dd>
+          </div>
+        </dl>
       </aside>
 
       <a href="#sobre" class="scroll-cue intro" style="--d: 13" aria-label="Rolar para o conteúdo">

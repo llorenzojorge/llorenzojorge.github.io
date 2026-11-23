@@ -30,7 +30,7 @@ um mascote que dirige pelo site e apresenta cada seção.
   curvas de nível estáticas, e o movimento só acontece quando o visitante pede.
 - **Projetos que se explicam.** Cada card simula uma requisição real da API e a resposta que ela devolve.
 - **Bilíngue.** Português e inglês, com a escolha salva para a próxima visita.
-- **Uma identidade só.** Paleta "concreto escuro" (chumbo, asfalto e cobalto), sem alternância de tema; terminal e código ficam em ilhas de grafite.
+- **Uma identidade só.** Paleta "concreto escuro" (chumbo, asfalto e cobalto), sem alternância de tema; a ficha de resumo e o código ficam em ilhas de grafite.
 - **Responsivo.** Desktop, tablet e celular.
 
 ## Por que sem framework
@@ -76,7 +76,7 @@ CLAUDE.md                       contexto e decisões do projeto para assistentes
   conhece o Chevettinho: o guia só escuta a estrada e pede viagens a ela.
 - **Textos fora do código.** Toda a cópia fica em `assets/js/i18n/pt.js` e `en.js`. O HTML só referencia chaves
   (`data-i18n`, `data-i18n-html`, `data-i18n-aria`).
-- **Design tokens.** Cores, fontes e curvas vivem em variáveis CSS. As ilhas escuras (terminal e código) só redefinem os tokens.
+- **Design tokens.** Cores, fontes e curvas vivem em variáveis CSS. As ilhas escuras (ficha de resumo e código) só redefinem os tokens.
 - **Acessibilidade.** Navegação por teclado (a viagem leva o foco ao título da seção), `aria-current` na parada ativa,
   textos alternativos traduzidos e nada de efeitos que seguem o cursor.
 

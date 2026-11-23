@@ -24,7 +24,7 @@
 }
 @media (max-width: 960px) {
   .hero { grid-template-columns: 1fr; grid-template-rows: auto; padding-top: 4rem; min-height: auto; gap: 2.5rem; }
-  .term { max-width: 440px; }
+  .summary { max-width: 440px; }
   .scroll-cue { display: none; }
   .about { grid-template-columns: 1fr; }
   .pillars { grid-template-columns: 1fr; }

@@ -32,7 +32,7 @@ img { display: block; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
 
 /* rótulos técnicos em mono */
-.term, .section__index, .chip, .stack dt, .project__meta, .project__stack, .code,
+.section__index, .chip, .stack dt, .project__meta, .project__stack, .code,
 .pipeline, .led, .timeline__when, .more__name, .buddy__head, .pill-btn, .btn, .link-arrow,
 .legend, .scroll-cue, .footer, .contact__email, .id-card__role, .pillar__proof, .pillars__title,
 .more__title, .buddy__btn, .toast, .map__num, .map__label, .shift__eyebrow {

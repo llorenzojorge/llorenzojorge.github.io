@@ -55,8 +55,8 @@
   color-scheme: dark;
 }
 
-/* ilhas escuras: terminal e trechos de código ficam um degrau abaixo do fundo */
-.term,
+/* ilhas escuras: ficha de resumo e trechos de código ficam um degrau abaixo do fundo */
+.summary,
 .project__visual {
   --bg: #1a1c20;
   --surface: #202227;

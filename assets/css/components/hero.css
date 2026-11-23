@@ -1,6 +1,6 @@
 /* =========================================================
    Hero
-   Apresentação, título animado e cartão-terminal.
+   Apresentação, título animado e ficha de resumo.
    ========================================================= */
 
 .hero {
@@ -62,25 +62,44 @@
 .btn--ghost { border: 1px solid var(--text); color: var(--text); }
 .btn--ghost:hover { background: var(--text); color: var(--bg); transform: translateY(-2px); }
 
-/* cartão-terminal (ilha escura) */
-.term {
+/* ficha de resumo (ilha escura): fatos rápidos em linguagem comum, sem jargão de terminal */
+.summary {
   width: 100%;
   background: var(--bg);
-  border-radius: 14px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
   box-shadow: var(--shadow);
-  font-size: .8rem;
   overflow: hidden;
 }
-.term__bar { display: flex; align-items: center; gap: 6px; padding: .65rem .9rem; border-bottom: 1px solid var(--border); }
-.term__bar span { width: 9px; height: 9px; border-radius: 50%; background: var(--border-strong); }
-.term__bar p { margin-left: auto; color: var(--muted); font-size: .72rem; }
-.term__body { padding: .9rem 1rem 1.1rem; display: grid; gap: .15rem; color: var(--muted); min-height: 15.2rem; align-content: start; }
-.term__cmd:not(:first-child) { margin-top: .5rem; }
-.js .term__out { opacity: 0; transform: translateY(4px); transition: opacity .35s ease, transform .35s ease; }
-.js .term__out.is-on { opacity: 1; transform: none; }
-.js .term__cmd { visibility: hidden; }
-.js .term__cmd.is-on { visibility: visible; }
-.term__caret, .typing-caret {
+.summary__head {
+  display: flex; flex-direction: column; align-items: flex-start; gap: .7rem;
+  padding: 1.1rem 1.25rem 1rem; border-bottom: 1px solid var(--border);
+}
+.summary__key {
+  font-family: var(--font-mono); font-size: .68rem; letter-spacing: .13em; text-transform: uppercase;
+  color: var(--dim);
+}
+.summary__status {
+  display: inline-flex; align-items: center; gap: .5rem;
+  padding: .28rem .75rem; border-radius: 999px;
+  font-size: .8rem; font-weight: 600; color: #c4f0de;
+  background: rgba(94, 200, 173, .13); border: 1px solid rgba(94, 200, 173, .35);
+}
+.summary__list { margin: 0; padding: .3rem 1.25rem 1rem; }
+.summary__row { padding: .8rem 0; border-bottom: 1px dashed var(--border); }
+.summary__row:last-child { border-bottom: 0; }
+.summary__row dt { margin-bottom: .3rem; }
+.summary__row dd { margin: 0; font-size: 1rem; font-weight: 600; color: var(--text); }
+.summary__row small { display: block; margin-top: .15rem; font-size: .84rem; font-weight: 400; color: var(--muted); }
+.summary__chips { display: flex; flex-wrap: wrap; gap: .4rem; margin: 0; padding: 0; list-style: none; }
+.summary__chips li {
+  padding: .25rem .6rem; border-radius: 7px;
+  font-size: .82rem; font-weight: 600;
+  background: var(--surface-2); border: 1px solid var(--border-strong);
+}
+
+/* cursor piscando do balão do Chevettinho */
+.typing-caret {
   display: inline-block; width: .5em; height: 1em; vertical-align: -2px;
   background: var(--accent); animation: blink 1s steps(1) infinite;
 }
