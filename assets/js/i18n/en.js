@@ -97,6 +97,7 @@ export default {
     "End of the ride! If this fits your team, the contact is right here. I'll stay right here on the road if you need me.",
   ],
   "buddy.hello": "Beep beep! Where to?",
+  "buddy.back": "Beep beep! Good to see you again. Want to jump somewhere or take the tour with me again?",
   "buddy.q": [
     ["Who's Lorenzo?", "A back-end focused full-stack dev from Curitiba. He started in IT support, now builds APIs with Node.js, NestJS and .NET, and he's open to opportunities.", "#sobre"],
     ["What's his stack?", "TypeScript and C# as languages, Node/NestJS and .NET on the back, React/Next on the front, PostgreSQL and SQL Server for data, Docker and GitHub Actions to ship.", "#stack"],

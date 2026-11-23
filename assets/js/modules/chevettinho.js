@@ -2,6 +2,7 @@
  * Chevettinho: o mascote-guia, que mora na estrada do minimapa.
  *
  * - Na primeira visita, chega na estrada e oferece um tour pelas paradas.
+ * - Nas visitas seguintes, dá um "de volta" curto (uma vez por sessão) com as perguntas prontas.
  * - Cada "próxima parada" é uma viagem de verdade pelo roadmap.
  * - Depois do tour, responde a perguntas prontas (sem IA, sem custo, sem backend).
  */
@@ -24,7 +25,7 @@ export function initChevettinho(roadmap) {
   progress.className = "buddy__progress";
   el.text.after(progress);
 
-  const state = { mode: null, step: 0, lastAnswer: null, typer: null };
+  const state = { mode: null, step: 0, lastAnswer: null, greeting: "buddy.hello", typer: null };
 
   /* ---------- o carro ---------- */
 
@@ -135,9 +136,10 @@ export function initChevettinho(roadmap) {
 
   /* ---------- perguntas prontas ---------- */
 
-  function renderChat(answerIndex = null) {
+  function renderChat(answerIndex = null, greeting = "buddy.hello") {
     state.mode = "chat";
     state.lastAnswer = answerIndex;
+    state.greeting = greeting;
     el.step.textContent = "";
     progress.hidden = true;
 
@@ -151,7 +153,7 @@ export function initChevettinho(roadmap) {
     ));
 
     showBubble();
-    type(answerIndex === null ? t("buddy.hello") : t("buddy.q")[answerIndex][1]);
+    type(answerIndex === null ? t(greeting) : t("buddy.q")[answerIndex][1]);
   }
 
   /* ---------- eventos ---------- */
@@ -170,10 +172,14 @@ export function initChevettinho(roadmap) {
   document.addEventListener(EVENTS.langChange, () => {
     if (el.bubble.hidden) return;
     if (state.mode === "tour") renderTour();
-    else if (state.mode === "chat") renderChat(state.lastAnswer);
+    else if (state.mode === "chat") renderChat(state.lastAnswer, state.greeting);
   });
 
-  /** Apresentação: o carro cai na estrada, buzina e, na primeira visita, oferece o tour. */
+  /** Já deu o "de volta" nesta aba? Recarregar a página não repete a saudação. */
+  const greeted = () => { try { return sessionStorage.getItem(STORAGE_KEYS.greeted); } catch { return "1"; } };
+  const markGreeted = () => { try { sessionStorage.setItem(STORAGE_KEYS.greeted, "1"); } catch { /* indisponível */ } };
+
+  /** Apresentação: o carro cai na estrada, buzina e cumprimenta: tour na primeira visita, "de volta" nas outras. */
   return async function start() {
     // anima o botão interno: o contêiner guarda a posição do carro na estrada
     await el.button.animate(
@@ -181,11 +187,12 @@ export function initChevettinho(roadmap) {
       { duration: 700, easing: "cubic-bezier(.3,1.4,.5,1)" },
     ).finished;
     shout("bi-bi!");
-    if (storage.get(STORAGE_KEYS.tourDone)) return;
+    const returning = storage.get(STORAGE_KEYS.tourDone);
+    if (returning && greeted()) return;
     await sleep(700);
-    if (el.bubble.hidden && !roadmap.isTravelling()) {
-      state.step = 0;
-      renderTour();
-    }
+    if (!el.bubble.hidden || roadmap.isTravelling()) return;
+    if (returning) { markGreeted(); renderChat(null, "buddy.back"); return; }
+    state.step = 0;
+    renderTour();
   };
 }

@@ -6,6 +6,7 @@ export const CONTACT_EMAIL = "lorenzojorge932@gmail.com";
 export const STORAGE_KEYS = {
   lang: "lj-lang",
   tourDone: "lj-tour-done",
+  greeted: "lj-greeted", // sessionStorage: o "de volta" já apareceu nesta aba
 };
 
 /** Paradas da estrada, na ordem: cada uma é uma seção da página. */

@@ -98,6 +98,7 @@ export default {
     "Fim da volta! Se fizer sentido para o seu time, o contato está logo aqui. Eu fico aqui na estrada se precisar de mim.",
   ],
   "buddy.hello": "Bi-bi! Pra onde vamos?",
+  "buddy.back": "Bi-bi! Que bom te ver de novo. Quer ir direto a algum lugar ou refazer a volta comigo?",
   "buddy.q": [
     ["Quem é o Lorenzo?", "Dev full-stack com foco em back-end, de Curitiba. Começou no suporte de TI, hoje constrói APIs com Node.js, NestJS e .NET e está aberto a oportunidades.", "#sobre"],
     ["Que stack ele usa?", "TypeScript e C# como linguagens, Node/NestJS e .NET no back, React/Next no front, PostgreSQL e SQL Server nos dados, Docker e GitHub Actions para entregar.", "#stack"],
