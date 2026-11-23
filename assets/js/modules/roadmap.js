@@ -169,13 +169,52 @@ export function initRoadmap() {
   const cityLen = cityPos.map((c) => lengthNearest(atlas.road, c.x, c.y, 2));
   atlas.done.style.strokeDasharray = `${atlasLen} ${atlasLen}`;
 
-  const camera = (x, y, scale) => `translate(${500 - scale * x}px, ${300 - scale * y}px) scale(${scale})`;
+  const camera = ({ x, y, scale }) => `translate(${500 - scale * x}px, ${300 - scale * y}px) scale(${scale})`;
+  const mixShot = (a, b, k) => ({ x: lerp(a.x, b.x, k), y: lerp(a.y, b.y, k), scale: a.scale * Math.pow(b.scale / a.scale, k) });
 
   function placeAtlasCar(length, direction) {
     const pose = poseAt(atlas.road, length, direction);
     atlas.car.setAttribute("transform", `translate(${pose.x} ${pose.y}) rotate(${pose.angle}) scale(1.5)`);
     atlas.done.style.strokeDashoffset = `${atlasLen - length}`;
   }
+
+  /**
+   * Os "palcos" da viagem. Os dois têm os mesmos passos, e quem dita o tempo é o flyOver:
+   * start (perto da origem) → rise (câmera sobe) → drive (carro anda) → dive (mergulha no destino).
+   */
+  const svgStage = {
+    start(from, to, length, direction) {
+      atlas.cities.forEach((g, i) => {
+        g.classList.toggle("is-from", i === from);
+        g.classList.toggle("is-to", i === to);
+      });
+      this.trip = { direction, start: { ...cityPos[from], scale: 2.8 }, overview: { x: 500, y: 300, scale: 1 }, end: { ...cityPos[to], scale: 3.4 } };
+      placeAtlasCar(length, direction);
+      atlas.world.style.transform = camera(this.trip.start);
+    },
+    rise(k) { atlas.world.style.transform = camera(mixShot(this.trip.start, this.trip.overview, k)); },
+    drive(k, length) { placeAtlasCar(length, this.trip.direction); },
+    dive(k) { atlas.world.style.transform = camera(mixShot(this.trip.overview, this.trip.end, k)); },
+  };
+
+  // o diorama 3D carrega em segundo plano depois da abertura; sem WebGL, fica o mapa em SVG
+  let stage = svgStage;
+  const load3D = () => import("./atlas3d.js")
+    .then(({ createAtlas3D }) => createAtlas3D({
+      root: atlas.root, road: atlas.road, cities: cityPos, cityLen,
+      labels: [...atlas.root.querySelectorAll(".atlas__label")],
+    }))
+    .then((view) => {
+      if (!view) return;
+      stage = view;
+      atlas.root.classList.add("atlas--3d");
+    })
+    .catch((err) => console.warn("atlas 3D indisponível, usando o mapa em SVG:", err));
+  // espera a abertura terminar para não disputar o processador com ela
+  setTimeout(() => {
+    if ("requestIdleCallback" in window) requestIdleCallback(load3D, { timeout: 3000 });
+    else load3D();
+  }, 3000);
 
   /** Anima um valor pelo relógio (não trava se o navegador pausar a renderização). */
   function tween(duration, onFrame, ease = easeInOut) {
@@ -195,17 +234,13 @@ export function initRoadmap() {
     Promise.all(scenery.map((el) => el.animate(keyframes, { ...options, fill: "forwards" }).finished));
 
   async function flyOver(fromIndex, toIndex, targetY) {
-    const from = cityPos[fromIndex], to = cityPos[toIndex];
     const direction = Math.sign(toIndex - fromIndex) || 1;
-    atlas.cities.forEach((g, i) => {
-      g.classList.toggle("is-from", i === fromIndex);
-      g.classList.toggle("is-to", i === toIndex);
-    });
-    placeAtlasCar(cityLen[fromIndex], direction);
-    atlas.world.style.transform = camera(from.x, from.y, 2.8);
+    const is3D = stage !== svgStage;
+    const view = stage; // fixa o palco durante a viagem, mesmo que o 3D termine de carregar no meio
 
     // 1. a página se afasta e o mapa aparece, ainda bem perto da cidade de origem
     atlas.root.classList.add("is-on");
+    view.start(fromIndex, toIndex, cityLen[fromIndex], direction);
     await Promise.all([
       animateScenery([{ transform: "scale(1)", opacity: 1 }, { transform: "scale(.94)", opacity: 0 }],
         { duration: 380, easing: "cubic-bezier(.5,0,.75,0)" }),
@@ -213,34 +248,29 @@ export function initRoadmap() {
     ]);
 
     // 2. a câmera sobe e mostra o site inteiro
-    await atlas.world.animate([{ transform: camera(from.x, from.y, 2.8) }, { transform: camera(500, 300, 1) }],
-      { duration: 700, easing: "cubic-bezier(.65,0,.3,1)", fill: "forwards" }).finished;
+    await tween(is3D ? 900 : 700, (k) => view.rise(k));
 
     // 3. o carro dirige até o destino (no mapa grande e na estrada lateral ao mesmo tempo)
     const sideFrom = carLen, sideTo = stopLen[toIndex];
     const mapFrom = cityLen[fromIndex], mapTo = cityLen[toIndex];
-    await tween(1100, (k) => {
-      placeAtlasCar(lerp(mapFrom, mapTo, k), direction);
+    await tween(is3D ? 1300 : 1100, (k) => {
+      view.drive(k, lerp(mapFrom, mapTo, k));
       placeCar(lerp(sideFrom, sideTo, k));
     });
     jumpTo(targetY); // a página troca de seção escondida embaixo do mapa
 
     // 4. a câmera desce no destino e a seção nova aparece
-    const world = atlas.world.getAnimations()[0];
-    const dive = atlas.world.animate([{ transform: camera(500, 300, 1) }, { transform: camera(to.x, to.y, 3.4) }],
-      { duration: 700, easing: "cubic-bezier(.6,0,.35,1)", fill: "forwards" });
-    world?.cancel();
-    await sleep(380);
+    const dive = tween(is3D ? 800 : 700, (k) => view.dive(k));
+    await sleep(is3D ? 440 : 380);
     await Promise.all([
       atlas.root.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 360, fill: "forwards" }).finished,
       animateScenery([{ transform: "scale(1.05)", opacity: 0 }, { transform: "scale(1)", opacity: 1 }],
         { duration: 520, easing: "cubic-bezier(.2,.8,.2,1)" }),
-      dive.finished,
+      dive,
     ]);
 
     scenery.forEach((el) => el.getAnimations().forEach((a) => a.cancel()));
     atlas.root.getAnimations().forEach((a) => a.cancel());
-    atlas.world.getAnimations().forEach((a) => a.cancel());
     atlas.root.classList.remove("is-on");
   }
 
