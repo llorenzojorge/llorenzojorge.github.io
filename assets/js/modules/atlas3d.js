@@ -11,6 +11,9 @@
  *
  * Nada fica animando em loop: a cena só é desenhada quando a viagem pede um quadro.
  * Quem conduz o tempo é o roadmap (pelo relógio), chamando start → rise → drive → dive.
+ * rise e drive se sobrepõem (o carro arranca com a câmera ainda subindo) e viram um
+ * quadro só. No turbo, drive recebe um "boost" (0 a 1): rastro de luz atrás do carro,
+ * postes que se esticam em riscos e a câmera mais perto.
  */
 import * as THREE from "../../vendor/three.min.js";
 
@@ -310,6 +313,7 @@ function buildCar() {
   beam.rotation.x = Math.PI / 2;
   beam.position.set(0, 0.012, 0.14 * s);
   car.add(beam);
+  car.userData.beam = beam;
 
   const shadow = new THREE.Mesh(new THREE.CircleGeometry(0.17, 20), new THREE.MeshBasicMaterial({ color: "#000000", transparent: true, opacity: 0.35, depthWrite: false }));
   shadow.rotation.x = -Math.PI / 2;
@@ -362,6 +366,35 @@ export function createAtlas3D({ root, road, cities, cityLen, labels }) {
   const doneLaneGeo = ribbon(pts, 0.022, 0.039);
   scene.add(new THREE.Mesh(doneLaneGeo, flatMat(C.accent, { polygonOffsetFactor: -4, polygonOffsetUnits: -4 })));
 
+  // turbo: rastro de luz cobalto atrás do carro (cor por vértice somada à cena; preto = apagado)
+  const trailGeo = ribbon(pts, ROAD_W * 0.7, 0.045);
+  trailGeo.setAttribute("color", new THREE.Float32BufferAttribute(new Float32Array(trailGeo.attributes.position.count * 3), 3));
+  const trailCol = trailGeo.attributes.color.array;
+  scene.add(new THREE.Mesh(trailGeo, flatMat("#ffffff", {
+    vertexColors: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false,
+    polygonOffsetFactor: -5, polygonOffsetUnits: -5,
+  })));
+  const legLen = (cityLen.at(-1) - cityLen[0]) / Math.max(1, cityLen.length - 1);
+  const trailRGB = [0.5, 0.6, 1];
+  let trailOn = false;
+  function paintTrail(length, direction, boost) {
+    if (!boost && !trailOn) return;
+    trailOn = boost > 0;
+    const reach = legLen * 1.3;
+    const glowAt = (l) => {
+      const behind = direction * (length - l);
+      return behind < 0 || behind > reach ? 0 : boost * (1 - behind / reach) ** 1.6;
+    };
+    for (let i = 0; i < pts.length - 1; i++) {
+      const ga = glowAt(pts[i].l), gb = glowAt(pts[i + 1].l);
+      [ga, gb, ga, ga, gb, gb].forEach((g, v) => {
+        const o = (i * 6 + v) * 3;
+        trailCol[o] = trailRGB[0] * g; trailCol[o + 1] = trailRGB[1] * g; trailCol[o + 2] = trailRGB[2] * g;
+      });
+    }
+    trailGeo.attributes.color.needsUpdate = true;
+  }
+
   // postes ao longo da estrada, alternando os lados
   const glow = glowTexture();
   const lamps = [];
@@ -379,7 +412,7 @@ export function createAtlas3D({ root, road, cities, cityLen, labels }) {
     post.position.set(x, p.y + 0.1, z);
     const bulb = new THREE.Sprite(new THREE.SpriteMaterial({ map: glow, color: "#ffffff", blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
     bulb.position.set(x, p.y + 0.19, z);
-    bulb.scale.setScalar(0.26);
+    bulb.scale.setScalar(0.26); // LAMP_SIZE
     const pool = new THREE.Mesh(poolGeo, new THREE.MeshBasicMaterial({ map: glow, color: C.window, transparent: true, opacity: 0.3, blending: THREE.AdditiveBlending, depthWrite: false }));
     pool.rotation.x = -Math.PI / 2;
     pool.position.set(p.x + nx * 0.1 * sideSign, p.y + 0.045, p.z + nz * 0.1 * sideSign);
@@ -387,6 +420,14 @@ export function createAtlas3D({ root, road, cities, cityLen, labels }) {
     lamps.push({ bulb, pool, at: l });
   }
   const setLamp = (lamp, k) => { lamp.bulb.material.opacity = k; lamp.pool.material.opacity = 0.3 * k; };
+  // turbo: os postes perto do carro se esticam em riscos de luz quando ele passa
+  const LAMP_SIZE = 0.26;
+  function streakLamps(length, boost) {
+    for (const lamp of lamps) {
+      const near = boost * clamp01(1 - Math.abs(lamp.at - length) / (0.9 / SCALE));
+      lamp.bulb.scale.set(LAMP_SIZE * (1 + 0.4 * near), LAMP_SIZE * (1 + 2.4 * near), 1);
+    }
+  }
 
   const towns = cities.map((_, i) => buildCity(model, i));
   towns.forEach((t) => scene.add(t.group));
@@ -473,6 +514,25 @@ export function createAtlas3D({ root, road, cities, cityLen, labels }) {
     placeLabels();
   }
 
+  /** rise e drive chegam no mesmo instante do relógio: os dois viram um quadro só. */
+  let drawQueued = false;
+  function drawTravel() {
+    if (drawQueued) return;
+    drawQueued = true;
+    queueMicrotask(() => {
+      drawQueued = false;
+      const rig = mixRig(mixRig(trip.start, trip.overview, trip.riseK), trip.overviewEnd, trip.driveK);
+      // turbo: a câmera chega mais perto do carro e a lente abre um pouco
+      if (trip.boost > 0) {
+        rig.dist *= 1 - 0.14 * trip.boost;
+        rig.target.lerp(car.position, 0.3 * trip.boost);
+      }
+      const fov = 28 + 5 * trip.boost;
+      if (camera.fov !== fov) { camera.fov = fov; camera.updateProjectionMatrix(); }
+      draw(rig);
+    });
+  }
+
   /* ---------- a viagem ---------- */
 
   let trip = null;
@@ -484,7 +544,15 @@ export function createAtlas3D({ root, road, cities, cityLen, labels }) {
       const overview = { target: center.clone(), azim: base.azim - 9 * DEG, elev: base.elev };
       overview.dist = fitDistance(overview.target, overview.azim, overview.elev);
       const overviewEnd = { ...overview, target: center.clone().lerp(towns[to].center, 0.18), azim: base.azim + 9 * DEG };
-      trip = { from, to, direction, overview, overviewEnd, start: close(from, 4.6, -14 * DEG), end: close(to, 3.2, 12 * DEG) };
+      trip = {
+        from, to, direction, overview, overviewEnd, start: close(from, 4.6, -14 * DEG), end: close(to, 3.2, 12 * DEG),
+        riseK: 0, driveK: 0, boost: 0,
+      };
+      camera.fov = 28;
+      camera.updateProjectionMatrix();
+      paintTrail(length, direction, 0);
+      streakLamps(length, 0);
+      car.userData.beam.material.opacity = 0.09;
       towns.forEach((t, i) => t.light(i === from ? 0.25 : 0));
       labels.forEach((el, i) => { el.classList.toggle("is-to", i === to); el.classList.toggle("is-from", i === from); });
       lamps.forEach((lamp) => setLamp(lamp, 0));
@@ -496,15 +564,20 @@ export function createAtlas3D({ root, road, cities, cityLen, labels }) {
       const here = cityLen[trip.from], fade = 0.6 / SCALE;
       const reach = k * (total + fade); // a "onda" de luz sai da cidade de origem para os dois lados
       lamps.forEach((lamp) => { const d = Math.abs(lamp.at - here); setLamp(lamp, smooth(d, d + fade, reach)); });
-      draw(mixRig(trip.start, trip.overview, k));
+      trip.riseK = k;
+      drawTravel();
     },
-    /** O carro dirige; a câmera orbita devagar e a cidade de destino se ilumina. */
-    drive(k, length) {
-      lamps.forEach((lamp) => setLamp(lamp, 1));
+    /** O carro dirige; a câmera orbita devagar e a cidade de destino se ilumina. boost: turbo (0 a 1). */
+    drive(k, length, boost = 0) {
       placeCar(length, trip.direction);
       towns[trip.to].light(smooth(0.45, 1, k));
       towns[trip.from].light(0.25 * (1 - k));
-      draw(mixRig(trip.overview, trip.overviewEnd, k));
+      paintTrail(length, trip.direction, boost);
+      streakLamps(length, boost);
+      car.userData.beam.material.opacity = 0.09 + 0.14 * boost;
+      trip.driveK = k;
+      trip.boost = boost;
+      drawTravel();
     },
     /** A câmera mergulha na cidade de destino. */
     dive(k) {

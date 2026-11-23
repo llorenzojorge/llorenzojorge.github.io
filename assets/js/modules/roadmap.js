@@ -6,6 +6,9 @@
  * - Ao rolar, o Chevettinho anda pela curva acompanhando a leitura e vira nas curvas.
  * - Ao clicar numa parada (ou em qualquer link interno), a câmera "sobe": a página
  *   vira um mapa do site inteiro, o carro dirige até o destino e a câmera desce nele.
+ * - Viagens longas (3 trechos ou mais) entram no modo turbo: o carro arranca, um mostrador
+ *   conta a velocidade (×1 → ×10) e ele freia perto do destino. Um clique, toque ou Esc
+ *   durante a viagem pula direto para a chegada.
  */
 import { EVENTS, STOPS, STOP_LABEL_KEYS } from "../core/config.js";
 import { offsetOf, jumpTo } from "../core/scroll.js";
@@ -16,6 +19,10 @@ const ODOMETER_KM = 42;           // a viagem inteira, do início ao contato
 const isHorizontal = () => window.matchMedia("(max-width: 720px)").matches;
 const lerp = (a, b, k) => a + (b - a) * k;
 const easeInOut = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+const easeInOutSpeed = (x) => (x < 0.5 ? 12 * x * x : 3 * (2 - 2 * x) ** 2); // derivada da easeInOut
+const linear = (x) => x;
+const CRUISE_MS = 1300;           // velocidade "×1": um trecho entre paradas vizinhas em 1,3 s
+const TURBO_LEGS = 3;             // a partir de quantos trechos a viagem entra no modo turbo
 
 /** Comprimento ao longo de um path mais próximo de um ponto (amostragem simples). */
 function lengthNearest(path, x, y, step = 1.5) {
@@ -71,6 +78,7 @@ export function initRoadmap() {
     done: document.getElementById("atlas-done"),
     car: document.getElementById("atlas-car"),
     dest: document.getElementById("atlas-dest"),
+    speed: document.getElementById("atlas-speed"),
     cities: [...document.querySelectorAll(".atlas__city")],
   };
 
@@ -80,6 +88,7 @@ export function initRoadmap() {
   let carDir = 1;        // 1 = indo para a próxima seção, -1 = voltando
   let activeIndex = 0;
   let travelling = false;
+  let skipping = false;  // o visitante pediu para pular a viagem
 
   /* ---------- geometria da estrada lateral ---------- */
 
@@ -193,7 +202,7 @@ export function initRoadmap() {
       atlas.world.style.transform = camera(this.trip.start);
     },
     rise(k) { atlas.world.style.transform = camera(mixShot(this.trip.start, this.trip.overview, k)); },
-    drive(k, length) { placeAtlasCar(length, this.trip.direction); },
+    drive(k, length) { placeAtlasCar(length, this.trip.direction); }, // no SVG, o turbo é só o mostrador
     dive(k) { atlas.world.style.transform = camera(mixShot(this.trip.overview, this.trip.end, k)); },
   };
 
@@ -216,13 +225,16 @@ export function initRoadmap() {
     else load3D();
   }, 3000);
 
-  /** Anima um valor pelo relógio (não trava se o navegador pausar a renderização). */
+  /**
+   * Anima um valor pelo relógio (não trava se o navegador pausar a renderização).
+   * Se o visitante pedir para pular, salta direto para o fim.
+   */
   function tween(duration, onFrame, ease = easeInOut) {
     const startedAt = performance.now();
     return new Promise((resolve) => {
       const tick = () => {
-        const k = Math.min(1, (performance.now() - startedAt) / duration);
-        onFrame(ease(k));
+        const k = skipping ? 1 : Math.min(1, (performance.now() - startedAt) / duration);
+        onFrame(ease(k), k * duration);
         if (k < 1) setTimeout(tick, 16);
         else resolve();
       };
@@ -233,13 +245,28 @@ export function initRoadmap() {
   const animateScenery = (keyframes, options) =>
     Promise.all(scenery.map((el) => el.animate(keyframes, { ...options, fill: "forwards" }).finished));
 
+  let shownSpeed = 0;
+  function showSpeed(ratio) {
+    const x = Math.round(clamp(ratio, 1, 10));
+    if (x !== shownSpeed) atlas.speed.textContent = "×" + (shownSpeed = x);
+  }
+
   async function flyOver(fromIndex, toIndex, targetY) {
     const direction = Math.sign(toIndex - fromIndex) || 1;
     const is3D = stage !== svgStage;
     const view = stage; // fixa o palco durante a viagem, mesmo que o 3D termine de carregar no meio
+    const legs = Math.max(1, Math.abs(toIndex - fromIndex));
+    const turbo = legs >= TURBO_LEGS;
+
+    // a duração cresce pouco com a distância: 1 trecho ≈ 0,65 s, 4 trechos ≈ 1,2 s
+    const riseMs = is3D ? 700 : 600;
+    const driveMs = is3D ? 650 + 170 * (legs - 1) : 600 + 150 * (legs - 1);
+    const leadMs = riseMs * 0.5; // o carro arranca enquanto a câmera ainda sobe
 
     // 1. a página se afasta e o mapa aparece, ainda bem perto da cidade de origem
     atlas.root.classList.add("is-on");
+    atlas.root.classList.toggle("is-turbo", turbo);
+    showSpeed(1);
     view.start(fromIndex, toIndex, cityLen[fromIndex], direction);
     await Promise.all([
       animateScenery([{ transform: "scale(1)", opacity: 1 }, { transform: "scale(.94)", opacity: 0 }],
@@ -247,19 +274,26 @@ export function initRoadmap() {
       atlas.root.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 380, fill: "forwards" }).finished,
     ]);
 
-    // 2. a câmera sobe e mostra o site inteiro
-    await tween(is3D ? 900 : 700, (k) => view.rise(k));
-
-    // 3. o carro dirige até o destino (no mapa grande e na estrada lateral ao mesmo tempo)
+    // 2. a câmera sobe e, no meio da subida, o carro arranca até o destino
+    //    (no mapa grande e na estrada lateral ao mesmo tempo)
     const sideFrom = carLen, sideTo = stopLen[toIndex];
     const mapFrom = cityLen[fromIndex], mapTo = cityLen[toIndex];
-    await tween(is3D ? 1300 : 1100, (k) => {
-      view.drive(k, lerp(mapFrom, mapTo, k));
-      placeCar(lerp(sideFrom, sideTo, k));
-    });
+    await tween(leadMs + driveMs, (_, ms) => {
+      const x = clamp((ms - leadMs) / driveMs, 0, 1);
+      const kd = easeInOut(x);
+      // velocidade de agora em relação ao cruzeiro: o carro arranca, passa de ×10 e freia
+      const ratio = skipping ? 1 : (legs * CRUISE_MS * easeInOutSpeed(x)) / driveMs;
+      const boost = turbo && !skipping ? clamp((ratio - 2) / 6, 0, 1) : 0;
+      if (turbo) showSpeed(ratio);
+      view.rise(easeInOut(clamp(ms / riseMs, 0, 1)));
+      view.drive(kd, lerp(mapFrom, mapTo, kd), boost);
+      placeCar(lerp(sideFrom, sideTo, kd));
+    }, linear);
     jumpTo(targetY); // a página troca de seção escondida embaixo do mapa
+    atlas.root.classList.remove("is-turbo");
+    skipping = false; // a chegada sempre acontece inteira
 
-    // 4. a câmera desce no destino e a seção nova aparece
+    // 3. a câmera desce no destino e a seção nova aparece
     const dive = tween(is3D ? 800 : 700, (k) => view.dive(k));
     await sleep(is3D ? 440 : 380);
     await Promise.all([
@@ -280,6 +314,7 @@ export function initRoadmap() {
     if (index < 0 || travelling) return;
     if (index === activeIndex && Math.abs(window.scrollY - offsetOf(selector)) < 4) return;
     travelling = true;
+    skipping = false;
 
     const from = activeIndex;
     document.dispatchEvent(new CustomEvent(EVENTS.depart, { detail: { index, from } }));
@@ -312,6 +347,15 @@ export function initRoadmap() {
     e.preventDefault();
     travelTo(selector);
   });
+
+  // durante a viagem, um clique, toque ou Esc pula direto para a chegada
+  const skip = (e) => {
+    if (!travelling || skipping) return;
+    if (e.type === "keydown" && !["Escape", "Enter", " "].includes(e.key)) return;
+    skipping = true;
+  };
+  document.addEventListener("pointerdown", skip);
+  document.addEventListener("keydown", skip);
 
   window.addEventListener("scroll", syncWithScroll, { passive: true });
   window.addEventListener("resize", () => { layout(); placeCar(carLen); syncWithScroll(); });
