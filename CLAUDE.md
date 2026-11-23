@@ -89,6 +89,8 @@ o Chevettinho; o guia só escuta a estrada e pede viagens a ela (`roadmap.travel
 - `assets/vendor/three.min.js` é um **recorte** com só as classes usadas. Usou uma classe nova do three.js?
   Acrescente-a em `scripts/vendor/three-entry.mjs` e gere o arquivo de novo com o comando descrito lá.
 - No celular (tela em pé) a câmera gira para a estrada correr na vertical.
+- Em novembro de 2026 ele avaliou trocar o carro por um avião (4 variações no FigCraft) e **recusou**: quer manter
+  o Chevettinho e o diorama 3D das cidades.
 - **Turbo (escolhido: "V1")**: a duração depende da distância, mas cresce pouco (1 trecho ≈ 0,65 s de estrada,
   4 trechos ≈ 1,2 s), e a subida da câmera se sobrepõe à arrancada. Com 3 trechos ou mais (`TURBO_LEGS`), o mostrador
   `.atlas__speed` conta ×1 → ×10 a partir da velocidade real (×1 = um trecho em 1,3 s), o carro deixa um rastro
@@ -126,6 +128,8 @@ Mexer em **todos** estes pontos, senão a estrada e o mapa saem de sincronia:
   api-restaurant.
 - Ele prioriza **software sólido, boa arquitetura, escalabilidade e boas práticas**; o texto deve vendê-lo assim,
   de forma profissional e sem exagero.
+- **Stack principal** (início, "sobre", ficha de resumo, meta descrição): TypeScript, Node.js, APIs REST, PostgreSQL,
+  React, Docker e CI/CD. **C# e .NET aparecem só na seção de stack** (e nos projetos que os usam), nunca em destaque.
 
 ## Como testar
 
