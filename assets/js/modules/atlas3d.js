@@ -16,18 +16,20 @@
  * postes que se esticam em riscos e a câmera mais perto.
  */
 import * as THREE from "../../vendor/three.min.js";
+import { buildChevette, CHEVETTE_LENGTH } from "./chevette.js";
 
 const SCALE = 1 / 100;          // 100 unidades do SVG = 1 unidade do mundo
 const SAMPLES = 600;            // amostras da estrada
 const ROAD_W = 0.22;
 const CITY_SCALE = 1.35;
+const CAR_LENGTH = 0.5;          // o Chevettinho na escala da maquete
 
 const C = {
   low: "#1f2227", high: "#5d6370",
   bands: [[0.45, "#202227"], [0.85, "#191b1f"], [1.25, "#141518"]],
   asphalt: "#0b0c0e", done: "#161b36", lane: "#eceef1", accent: "#7088ff",
   building: "#2a2d33", buildingLit: "#3d4aa0", window: "#c9d2ff",
-  body: "#5a73f0", roof: "#8fa2ff", glass: "#121317",
+  body: "#5a73f0",
 };
 
 const clamp01 = (v) => Math.max(0, Math.min(1, v));
@@ -285,24 +287,13 @@ function buildCity(model, index) {
   };
 }
 
-/** O Chevettinho, com a frente apontando para +z. */
+/** O Chevettinho (o Chevette "Tubarão" 73 de chevette.js), com a frente apontando para +z. */
 function buildCar() {
   const car = new THREE.Group();
-  const s = 1.7;
-  const body = new THREE.Mesh(new THREE.BoxGeometry(0.14 * s, 0.055 * s, 0.27 * s), new THREE.MeshLambertMaterial({ color: C.body, emissive: C.body, emissiveIntensity: 0.25 }));
-  body.position.y = 0.045 * s;
-  const glass = new THREE.MeshLambertMaterial({ color: C.glass });
-  const roof = new THREE.MeshLambertMaterial({ color: C.roof, emissive: C.roof, emissiveIntensity: 0.3 });
-  const cabin = new THREE.Mesh(new THREE.BoxGeometry(0.12 * s, 0.045 * s, 0.13 * s), [glass, glass, roof, glass, glass, glass]);
-  cabin.position.set(0, 0.095 * s, -0.02 * s);
-  car.add(body, cabin);
-
-  const lamp = new THREE.MeshBasicMaterial({ color: "#f3f3f0" });
-  for (const x of [-0.045, 0.045]) {
-    const l = new THREE.Mesh(new THREE.BoxGeometry(0.03 * s, 0.018 * s, 0.01), lamp);
-    l.position.set(x * s, 0.05 * s, 0.136 * s);
-    car.add(l);
-  }
+  const model = buildChevette({ paint: C.body });
+  model.scale.setScalar(CAR_LENGTH / CHEVETTE_LENGTH);
+  model.rotation.y = -Math.PI / 2; // o modelo nasce com a frente em +x
+  car.add(model);
 
   // faróis: um leque de luz no asfalto
   const shape = new THREE.Shape();
@@ -311,7 +302,7 @@ function buildCar() {
     color: "#eceef1", transparent: true, opacity: 0.09, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide,
   }));
   beam.rotation.x = Math.PI / 2;
-  beam.position.set(0, 0.012, 0.14 * s);
+  beam.position.set(0, 0.012, CAR_LENGTH / 2);
   car.add(beam);
   car.userData.beam = beam;
 
