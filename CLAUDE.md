@@ -39,6 +39,7 @@ assets/js/
   i18n/pt.js · en.js · index.js  textos e troca de idioma
   modules/roadmap.js           estrada lateral + transição do mapa (o coração da navegação)
   modules/atlas3d.js           o diorama 3D da viagem (three.js), carregado depois da abertura
+  modules/chevette.js          o Chevettinho 3D (Chevette "Tubarão" 73) usado no diorama
   modules/chevettinho.js       o guia: tour roteirizado e perguntas prontas
   modules/reveal.js            animações ao rolar
   modules/projects.js          simulação requisição → resposta nos cards
@@ -89,8 +90,11 @@ o Chevettinho; o guia só escuta a estrada e pede viagens a ela (`roadmap.travel
 - `assets/vendor/three.min.js` é um **recorte** com só as classes usadas. Usou uma classe nova do three.js?
   Acrescente-a em `scripts/vendor/three-entry.mjs` e gere o arquivo de novo com o comando descrito lá.
 - No celular (tela em pé) a câmera gira para a estrada correr na vertical.
-- Em novembro de 2026 ele avaliou trocar o carro por um avião (4 variações no FigCraft) e **recusou**: quer manter
-  o Chevettinho e o diorama 3D das cidades.
+- Em novembro de 2026 ele avaliou trocar o carro por um avião (duas rodadas, 9 variações) e **recusou**: achou
+  fora da realidade. Fica o Chevettinho e o diorama 3D das cidades.
+- **Modelo 3D do carro (escolhido: "C1 · Tubarão 73")**, entre 5 Chevettes 3D: carroceria extrudada do perfil lateral
+  (bico de tubarão), cabine afinando para cima, colunas, rodas cromadas e faróis redondos. Ele rejeitou o carro
+  antigo de caixas ("muito Roblox"). O modelo vive em `chevette.js`; o atlas só escala e gira.
 - **Turbo (escolhido: "V1")**: a duração depende da distância, mas cresce pouco (1 trecho ≈ 0,65 s de estrada,
   4 trechos ≈ 1,2 s), e a subida da câmera se sobrepõe à arrancada. Com 3 trechos ou mais (`TURBO_LEGS`), o mostrador
   `.atlas__speed` conta ×1 → ×10 a partir da velocidade real (×1 = um trecho em 1,3 s), o carro deixa um rastro
